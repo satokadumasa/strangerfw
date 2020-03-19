@@ -1,0 +1,22 @@
+{
+    "name": "strangerwork/strangerfw",
+    "description": "php web framework",
+    "type": "package",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kadumasa Sato",
+            "email": "sato.kadumasa@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.0",
+        "swiftmailer/swiftmailer": "^6.0",
+        "mustangostang/spyc": "@stable"
+    },
+    "autoload": {
+        "psr-4": {
+            "bamboophp\\": "src/"
+        }
+    }
+}
