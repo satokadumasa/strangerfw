@@ -1,5 +1,6 @@
 <?php
-namespace strangerphp\core\contoroller;
+namespace strangerfw\core\contoroller;
+
 class BaseController {
   //  ログ関連
   public $error_log;
@@ -24,17 +25,17 @@ class BaseController {
   protected $template = null;
 
   public function __construct($database, $uri, $url) {
-    Session::sessionStart();
-    $this->error_log = new Logger('ERROR');
-    $this->info_log = new Logger('INFO');
-    $this->debug = new Logger('DEBUG');
+    strangerfw\core\Session::sessionStart();
+    $this->error_log = new strangerfw\utils\Logger('ERROR');
+    $this->info_log = new strangerfw\utils\Logger('INFO');
+    $this->debug = new strangerfw\utils\Logger('DEBUG');
     $this->debug->log("BaseController::__construct() database:".print_r($database, true));
-    $this->dbConnect = new DbConnect();
+    $this->dbConnect = new strangerfw\utils\DbConnect();
     $this->dbConnect->setConnectionInfo($database);
     $this->dbh = $this->dbConnect->createConnection();
     $this->defaultSet();
     $this->setRequest($uri, $url);
-    $this->view = new View();
+    $this->view = new strangerfw\utils\View();
   }
 
   protected function defaultSet(){
@@ -43,7 +44,7 @@ class BaseController {
       $this->set('error_message', $_SESSION[COOKIE_NAME]['error_message']);
     }
     //    $this->set('Sitemenu',)
-    $session = Session::get();
+    $session = strangerfw\core\Session::get();
     $menu_helper = new MenuHelper($session['Auth']);
     if (isset($session['Auth'])) {
       $log_out_str = $menu_helper->site_menu($session['Auth'], 'logined');
@@ -54,7 +55,7 @@ class BaseController {
       // $log_out_str = "<a href='".DOCUMENT_ROOT."login/'>Login</a>";
     }
     $this->set('Sitemenu',$log_out_str);
-    Session::deleteMessage('error_message');
+    strangerfw\core\Session::deleteMessage('error_message');
     
     $this->set('document_root', DOCUMENT_ROOT);
     $this->set('site_name', SITE_NAME);

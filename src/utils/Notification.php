@@ -1,4 +1,6 @@
 <?php
+namespace strangerfw\utils;
+
 require_once BAMBOO_ROOT . '/vendor/autoload.php';
 
 class Notification {
@@ -9,10 +11,10 @@ class Notification {
 
   public $conf = null;
   public function __construct() {
-    $this->error_log = new Logger('ERROR');
-    $this->info_log = new Logger('INFO');
-    $this->debug = new Logger('DEBUG');
-    $conf = Config::get('mailer');
+    $this->error_log = new strangerfw\utils\Logger('ERROR');
+    $this->info_log = new strangerfw\utils\Logger('INFO');
+    $this->debug = new strangerfw\utils\Logger('DEBUG');
+    $conf = strangerfw\core\Config::get('mailer');
     $this->conf = $conf['mailer'];
   }
 
@@ -38,7 +40,7 @@ class Notification {
   public function geterateRegistNotifyMessage($form, $class_name, $teplate_name) {
     $url = BASE_URL . 'confirm/' . $form['User']['authentication_key'] .'/';
 
-    $site_info = Config::get('site_info');
+    $site_info = strangerfw\core\Config::get('site_info');
 
     $mailer_data = [
       'Mailer' => [
@@ -51,7 +53,7 @@ class Notification {
         'admin_mail' => $this->conf['from'],
       ],
     ];
-    $view = new View($teplate_name);
+    $view = new strangerfw\utils\View($teplate_name);
     $body = [];
     $file_name = VIEW_TEMPLATE_PATH.$class_name.'/'.$teplate_name.'.tpl';
     $view->framingView($body, $mailer_data, $file_name, 'Mailer');

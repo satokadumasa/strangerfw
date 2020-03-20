@@ -1,4 +1,5 @@
 <?php
+namespace strangerfw\utils;
 
 class StringUtil
 {

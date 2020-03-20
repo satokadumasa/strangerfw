@@ -1,5 +1,6 @@
 <?php
-namespace strangerphp\core;
+namespace strangerfw\core;
+
 class Route {
   public $route = [];
   private $default_actions = ['index', 'new', 'edit', 'create', 'save', 'update', 'confirm', 'show', 'delete'];
@@ -14,9 +15,9 @@ class Route {
 
   public function __construct($CONV_STRING_LIST) {
     $this->CONV_STRING_LIST = $CONV_STRING_LIST;
-    $this->error_log = new Logger('ERROR');
-    $this->info_log = new Logger('INFO');
-    $this->debug = new Logger('DEBUG');
+    $this->error_log = new strangerfw\utils\Logger('ERROR');
+    $this->info_log = new strangerfw\utils\Logger('INFO');
+    $this->debug = new strangerfw\utils\Logger('DEBUG');
 
     $this->setDefaultRoutes();
   }

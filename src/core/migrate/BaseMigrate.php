@@ -1,13 +1,14 @@
 <?php
-namespace strangerphp\core\migrate;
+namespace strangerfw\core\migrate;
+
 class BaseMigrate {
   private $dbh = null;
   public function __construct($default_database) {
-    $this->error_log = new Logger('ERROR');
-    $this->info_log = new Logger('INFO');
-    $this->debug = new Logger('DEBUG');
+    $this->error_log = new strangerfw\utils\Logger('ERROR');
+    $this->info_log = new strangerfw\utils\Logger('INFO');
+    $this->debug = new strangerfw\utils\Logger('DEBUG');
 
-    $this->dbConnect = new DbConnect();
+    $this->dbConnect = new strangerfw\utils\DbConnect();
     $this->dbConnect->setConnectionInfo($default_database);
     $this->dbh = $this->dbConnect->createConnection();
   }

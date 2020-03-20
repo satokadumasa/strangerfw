@@ -1,4 +1,6 @@
 <?php
+namespace strangerfw\utils;
+
 class DbConnect {
   protected $debug = null;
 
@@ -6,7 +8,7 @@ class DbConnect {
   }
 
   public function setConnectionInfo($connection_info){
-    $this->debug = new Logger('DEBUG');
+    $this->debug = new strangerfw\utils\Logger('DEBUG');
     $this->rdb = $connection_info['rdb'];
     $this->host = $connection_info['host'];
     $this->port = isset($connection_info['port']) ? $connection_info['port'] : 3306; 

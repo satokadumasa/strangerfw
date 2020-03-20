@@ -1,4 +1,6 @@
 <?php
+namespace strangerfw\utils;
+
 class FileUtil{
   private $fileatime = null;
 

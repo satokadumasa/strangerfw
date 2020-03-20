@@ -1,5 +1,6 @@
 <?php
-namespace strangerphp\core;
+namespace strangerfw\core;
+
 class Schema {
   public static function get($schena) {
     return yaml_parse_file( DB_PATH."/".$schena.".php");

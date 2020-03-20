@@ -1,4 +1,6 @@
 <?php
+namespace strangerfw\utils;
+
 class Logger {
   private $log_file = "";
   private $log_level = 'INFO';

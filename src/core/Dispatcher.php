@@ -1,13 +1,14 @@
 <?php
-namespace strangerphp\core;
+namespace strangerfw\core;
+
 class Dispatcher {
   private $route;
   private $default_database;
   public function __construct($route) {
     $this->route = $route;
-    $this->error_log = new Logger('ERROR');
-    $this->info_log = new Logger('INFO');
-    $this->debug = new Logger('DEBUG');
+    $this->error_log = new strangerfw\utils\Logger('ERROR');
+    $this->info_log = new strangerfw\utils\Logger('INFO');
+    $this->debug = new strangerfw\utils\Logger('DEBUG');
   }
 
   public function dispatcheController() {

@@ -1,5 +1,6 @@
 <?php
-namespace strangerphp\core;
+namespace strangerfw\core;
+
 class Session {
   public static function sessionStart() {
     session_start(['cookie_lifetime' => COOKIE_LIFETIME]);

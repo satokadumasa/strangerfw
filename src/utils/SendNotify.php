@@ -1,4 +1,5 @@
 <?php
+namespace strangerfw\utils;
 
 class SendNotify {
   //  ログ関連
@@ -9,12 +10,12 @@ class SendNotify {
   protected $dbh = null;
 
   public function __construct() {
-    $this->error_log = new Logger('ERROR');
-    $this->info_log = new Logger('INFO');
-    $this->debug = new Logger('DEBUG');
-    $conf = Config::get('database.config');
+    $this->error_log = new strangerfw\utils\Logger('ERROR');
+    $this->info_log = new strangerfw\utils\Logger('INFO');
+    $this->debug = new strangerfw\utils\Logger('DEBUG');
+    $conf = strangerfw\core\Config::get('database.config');
     $database = $conf['default_database'];
-    $dbConnect = new DbConnect();
+    $dbConnect = new strangerfw\utils\DbConnect();
     $dbConnect->setConnectionInfo($database);
     $this->dbh = $dbConnect->createConnection();
   }
@@ -25,7 +26,7 @@ class SendNotify {
     foreach ($users as $key => $form) {
       $body = null;
       $user2 = null;
-      $notification = new Notification();
+      $notification = new strangerfw\utils\Notification();
       $body = $notification->geterateRegistNotifyMessage($form, 'Mailer', 'regist_notify');
       $notification->sendRegistNotify($form, $body, '登録確認メール');
       $form['User']['notified_at'] = date('Y-m-d H:i:s');

@@ -1,5 +1,6 @@
 <?php
-namespace strangerphp\core\model;
+namespace strangerfw\core\model;
+
 class Migration extends BaseModel {
   public $table_name  = 'migrations';
   public $model_name  = 'Migration';

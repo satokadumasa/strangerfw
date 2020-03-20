@@ -1,5 +1,6 @@
 <?php
-namespace strangerphp\core;
+namespace strangerfw\core;
+
 class Config {
   public static function get($config) {
     require CONFIG_PATH.ENVIRONMENTS."/".$config.".php";

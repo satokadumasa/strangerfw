@@ -1,5 +1,6 @@
 <?php
-// require_once dirname(dirname(dirname(__FILE__))) . "/config/config.php";
+namespace strangerfw\utils;
+
 /**
  * 
  */
@@ -11,9 +12,9 @@ class View {
 
   public function __construct($view_template_path = null) {
     $this->view_template_path = $view_template_path ? $view_template_path : VIEW_TEMPLATE_PATH;
-    $this->error_log = new Logger('ERROR');
-    $this->info_log = new Logger('INFO');
-    $this->debug = new Logger('DEBUG');
+    $this->error_log = new strangerfw\utils\Logger('ERROR');
+    $this->info_log = new strangerfw\utils\Logger('INFO');
+    $this->debug = new strangerfw\utils\Logger('DEBUG');
   }
 
   /**
