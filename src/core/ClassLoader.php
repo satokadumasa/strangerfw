@@ -6,7 +6,7 @@ class ClassLoader {
     $scan_dir_list = array(
       CONTROLLER_PATH,
       MODEL_PATH,
-      LIB_PATH,
+      // LIB_PATH,
       MIGRATION_PATH,
       HELPER_PATH,
       // SERVICE_PATH,
