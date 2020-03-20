@@ -1,5 +1,6 @@
 <?php
-namespace strangerphp\core;
+namespace strangerfw\core;
+
 class ClassLoader {
   public static function loadClass($class){
     $scan_dir_list = array(

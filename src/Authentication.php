@@ -1,6 +1,6 @@
 <?php
 #require_once __DIR__ . '/../vendor/autoload.php';
-namespace strangerphp;
+namespace strangerfw;
 
 class Authentication{
   public static function auth(&$dbh, $request){
