@@ -504,7 +504,7 @@ EOM;
       echo "      Schema File:".SCHEMA_PATH.$this->argv[3].".yaml\n";
       $table_config = [];
       if(file_exists(SCHEMA_PATH.$this->argv[3].".yaml")){
-        $table_config = Spyc::YAMLLoad(SCHEMA_PATH.$this->argv[3].".yaml");
+        $table_config = \Spyc::YAMLLoad(SCHEMA_PATH.$this->argv[3].".yaml");
       }
       else {
         $table_config[$this->argv[3]]['id'] = [
@@ -544,7 +544,7 @@ EOM;
           , 'default' => null
         ];
       }
-      $fp .= Spyc::YAMLDump($table_config,true , true, true);
+      $fp .= \Spyc::YAMLDump($table_config,true , true, true);
       file_put_contents(SCHEMA_PATH.$this->argv[3].".yaml", $fp);
     } catch (Exception $e) {
       echo "  Can not create schema file\n";

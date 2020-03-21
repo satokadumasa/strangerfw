@@ -37,7 +37,7 @@ class BaseModel {
       $this->error_log = new \strangerfw\utils\Logger('ERROR');
       $this->info_log = new \strangerfw\utils\Logger('INFO');
       $this->debug = new \strangerfw\utils\Logger('DEBUG');
-      $columns = Spyc::YAMLLoad(SCHEMA_PATH.$this->table_name.".yaml");
+      $columns = \Spyc::YAMLLoad(SCHEMA_PATH.$this->table_name.".yaml");
       $this->column_conf = $columns[$this->table_name];
     } catch(Exception $e) {
       $this->debug->log("       BaseModel::__construct() error:" . $e->getMessage());
