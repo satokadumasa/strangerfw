@@ -23,12 +23,12 @@ class DbConnect {
       $dsn = $this->rdb . ":host=" . $this->host . ";port=".$this->port.";dbname=" . $this->dbname . ";charset=" . $this->charset;
 
       $this->debug->log("dsn:".$dsn);
-      $dbh = new PDO(
+      $dbh = new \PDO(
         $dsn,
         $this->username,
         $this->password,
         [
-          PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+          PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
           PDO::ATTR_EMULATE_PREPARES => false, 
           PDO::ATTR_FETCH_TABLE_NAMES => 1
         ]
@@ -36,8 +36,8 @@ class DbConnect {
       $this->debug->log("dbh:".print_r($dbh, true));
 
       return $dbh;
-    } catch (PDOException $e) {
-      throw new Exception('データベース接続失敗。'.$e->getMessage(), 1);
+    } catch (\PDOException $e) {
+      throw new \Exception('データベース接続失敗。'.$e->getMessage(), 1);
     }
   }
 }

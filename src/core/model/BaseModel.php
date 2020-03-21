@@ -471,7 +471,7 @@ class BaseModel {
    *  @retrun BaseModel $this
    */
   public function limit($limit_num) {
-    if (!is_int($limit_num)) throw new Exception("Error Processing Request", 1);
+    if (!is_int($limit_num)) throw new \Exception("Error Processing Request", 1);
     $this->limit_num = $limit_num;
     return $this;
   }
@@ -482,7 +482,7 @@ class BaseModel {
    *  @retrun BaseModel $this
    */
   public function setMaxRows($max_rows) {
-    if (!is_int($max_rows)) throw new Exception("Error Processing Request", 1);
+    if (!is_int($max_rows)) throw new \Exception("Error Processing Request", 1);
     if ($max_rows > 0) $this->max_rows = $max_rows;
     return $this;
   }
@@ -493,7 +493,7 @@ class BaseModel {
    *  @retrun BaseModel $this
    */
   public function offset($offset_num) {
-    if (!is_int($offset_num)) throw new Exception("Error Processing Request", 1);
+    if (!is_int($offset_num)) throw new \Exception("Error Processing Request", 1);
     $this->offset_num = $offset_num;
     return $this;
   }
@@ -504,7 +504,7 @@ class BaseModel {
    *  @retrun BaseModel $this
    */
   public function pagenate($page){
-    if (!is_int($page)) throw new Exception("Error Processing Request", 1);
+    if (!is_int($page)) throw new \Exception("Error Processing Request", 1);
     if ($page > 0 && $this->max_rows > 0) {
       $this->limit_num = $this->max_rows * $page;
       $this->offset_num = $this->max_rows * ($page - 1);
@@ -623,7 +623,7 @@ class BaseModel {
         }
       }
     } catch (Exception $e) {
-      throw new Exception($e->getMessage(), 1);
+      throw new \Exception($e->getMessage(), 1);
     }
   }
 

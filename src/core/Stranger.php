@@ -433,7 +433,7 @@ EOM;
     $return = $this->applyTemplate($template_fileatime, $fp, $this->class_name, null, $method);
     fclose($fp);
     if ($return === false) {
-      throw new Exception("Can not create ${$method} view template.", 1);
+      throw new \Exception("Can not create ${$method} view template.", 1);
     }
   }
 
