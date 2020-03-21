@@ -15,9 +15,9 @@ class Route {
 
   public function __construct($CONV_STRING_LIST) {
     $this->CONV_STRING_LIST = $CONV_STRING_LIST;
-    $this->error_log = new strangerfw\utils\Logger('ERROR');
-    $this->info_log = new strangerfw\utils\Logger('INFO');
-    $this->debug = new strangerfw\utils\Logger('DEBUG');
+    $this->error_log = new \strangerfw\utils\Logger('ERROR');
+    $this->info_log = new \strangerfw\utils\Logger('INFO');
+    $this->debug = new \strangerfw\utils\Logger('DEBUG');
 
     $this->setDefaultRoutes();
   }

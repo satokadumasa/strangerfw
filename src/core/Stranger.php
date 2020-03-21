@@ -15,9 +15,9 @@ class Stranger {
   {
     echo "create instance\n";
     $this->argv = $argv;
-    $this->error_log = new strangerfw\utils\Logger('ERROR');
-    $this->info_log = new strangerfw\utils\Logger('INFO');
-    $this->debug = new strangerfw\utils\Logger('DEBUG');
+    $this->error_log = new \strangerfw\utils\Logger('ERROR');
+    $this->info_log = new \strangerfw\utils\Logger('INFO');
+    $this->debug = new \strangerfw\utils\Logger('DEBUG');
   }
 
   public function con($conf)
@@ -27,7 +27,7 @@ class Stranger {
       $database = $conf['default_database'];
       $this->debug->log("Stranger::execMigration() database:".print_r($database, true));
       $this->default_database = $database;
-      $this->dbConnect = new strangerfw\utils\DbConnect();
+      $this->dbConnect = new \strangerfw\utils\DbConnect();
       $this->dbConnect->setConnectionInfo($database);
       $this->dbh = $this->dbConnect->createConnection();
       echo "  connected\n";
@@ -55,7 +55,7 @@ class Stranger {
     )
     */
     $this->table_name = isset($this->argv[3]) ? $this->argv[3] : null;
-    $this->class_name = strangerfw\utils\StringUtil::convertTableNameToClassName($this->table_name);
+    $this->class_name = \strangerfw\utils\StringUtil::convertTableNameToClassName($this->table_name);
     echo "run stranger\n";
 
     switch ($this->argv[1]) {
@@ -70,21 +70,21 @@ class Stranger {
         break;
       case 'migrate:init':
         echo "  exec migrate:init\n";
-        $conf = strangerfw\core\Config::get('database.config');
+        $conf = \strangerfw\core\Config::get('database.config');
         $this->con($conf);
         $this->initSchema();
         exit();
         break;
       case 'migrate':
         echo "  exec migrate\n";
-        $conf = strangerfw\core\Config::get('database.config');
+        $conf = \strangerfw\core\Config::get('database.config');
         $this->con($conf);
         $this->execMigration();
         exit();
         break;
       case 'db:migrate':
         echo "  exec db:migrate\n";
-        $conf = strangerfw\core\Config::get('database.config');
+        $conf = \strangerfw\core\Config::get('database.config');
         $this->con($conf);
         $arr = explode(':', $this->argv[1]);
         exit();
@@ -120,7 +120,7 @@ class Stranger {
         'username' => $arr[2],
         'password' => $arr[3],
       ];
-      $dbConnect = new strangerfw\utils\DbConnect();
+      $dbConnect = new \strangerfw\utils\DbConnect();
       $dbConnect->setConnectionInfo($database);
       $dbh = $dbConnect->createConnection();
       echo "  connected\n";
@@ -266,7 +266,7 @@ EOM;
       $migration_files = $this->getFileList(MIGRATION_PATH);
       $this->debug->log("Stranger::execMigration() dbh:".print_r($this->dbh, true));
       $this->debug->log("Stranger::execMigration() CH-01\n");
-      $migrate = new strangerfw\core\model\Migration($this->dbh);
+      $migrate = new \strangerfw\core\model\Migration($this->dbh);
       $this->debug->log("Stranger::execMigration() CH-02\n");
       $versions = [];
       if(isset($this->argv[2])) $versions = explode('=', $this->argv[2]);

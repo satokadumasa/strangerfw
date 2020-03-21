@@ -4,15 +4,15 @@ namespace strangerfw;
 
 class Authentication{
   public static function auth(&$dbh, $request){
-    $debug = new strangerfw\utils\Logger('DEBUG');
+    $debug = new \strangerfw\utils\Logger('DEBUG');
     $auths = new User($dbh);
     $auth = $auths->auth($request);
     if ($auth){
       // $debug->log("Authentication::auth() request:".print_r($request, true));
-      $user_cookie_name = strangerfw\utils\StringUtil::makeRandStr(USER_COOKIE_NAME_LENGTH);
+      $user_cookie_name = \strangerfw\utils\StringUtil::makeRandStr(USER_COOKIE_NAME_LENGTH);
       setcookie(COOKIE_NAME, $user_cookie_name, time() + COOKIE_LIFETIME);
       $data['Auth'] = $auth;
-      strangerfw\core\Session::set($data);
+      \strangerfw\core\Session::set($data);
       return true;
     }
     else {
@@ -22,7 +22,7 @@ class Authentication{
 
   public static function isAuth(){
     if (DEFAULT_FLAG_OF_AUTHENTICATION ) {
-      $session = strangerfw\core\Session::get();
+      $session = \strangerfw\core\Session::get();
       return isset($session['Auth']) ? $session['Auth'] : false;
     }
     return true;
@@ -30,7 +30,7 @@ class Authentication{
 
   public static function roleCheck($role_ids, $action) {
     if (!isset($role_ids['acc'][$action]) || $role_ids['acc'][$action] = '') return true;
-    $session = strangerfw\core\Session::get();
+    $session = \strangerfw\core\Session::get();
     return in_array($session['Auth']['User']['role_id'], $role_ids['acc'][$action]);
   }
 }

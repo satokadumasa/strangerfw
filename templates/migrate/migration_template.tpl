@@ -1,5 +1,5 @@
 <?php
-class <!----migration_class_name----> extends strangerfw\core\migrate\BaseMigrate {
+class <!----migration_class_name----> extends \strangerfw\core\migrate\BaseMigrate {
   private $dbh = null;
   public function __construct($default_database) {
     parent::__construct($default_database);

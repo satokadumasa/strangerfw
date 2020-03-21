@@ -34,9 +34,9 @@ class BaseModel {
     try{
       if($dbh) $this->setDbh($dbh);
 
-      $this->error_log = new strangerfw\utils\Logger('ERROR');
-      $this->info_log = new strangerfw\utils\Logger('INFO');
-      $this->debug = new strangerfw\utils\Logger('DEBUG');
+      $this->error_log = new \strangerfw\utils\Logger('ERROR');
+      $this->info_log = new \strangerfw\utils\Logger('INFO');
+      $this->debug = new \strangerfw\utils\Logger('DEBUG');
       $columns = Spyc::YAMLLoad(SCHEMA_PATH.$this->table_name.".yaml");
       $this->column_conf = $columns[$this->table_name];
     } catch(Exception $e) {
@@ -93,7 +93,7 @@ class BaseModel {
       $col_name = $arr[count($arr) - 1];
 
       $column_name = str_replace('.', '_', $v['column_name']);
-      $column_name = strangerfw\utils\StringUtil::convertTableNameToClassName($column_name);
+      $column_name = \strangerfw\utils\StringUtil::convertTableNameToClassName($column_name);
 
       switch ($col_name) {
         case 'created_at':
@@ -419,7 +419,7 @@ class BaseModel {
       $cond_tmp = null;
       $condition = $this->conditions[$i];
       $column_name = str_replace('.', '_', $condition['column_name']);
-      $column_name = strangerfw\utils\StringUtil::convertTableNameToClassName($column_name);
+      $column_name = \strangerfw\utils\StringUtil::convertTableNameToClassName($column_name);
 
       if (is_array($condition['value'])) {
         // $arr = implode(",", $condition['value']);

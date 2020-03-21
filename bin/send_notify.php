@@ -8,5 +8,5 @@ putenv("ENVIRONMENT=development");
 
 spl_autoload_register(array('ClassLoader', 'loadClass'));
 
-$stranger = new strangerfw\utils\SendNotify();
+$stranger = new \strangerfw\utils\SendNotify();
 $stranger->sendNotify();

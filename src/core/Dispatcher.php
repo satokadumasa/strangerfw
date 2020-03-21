@@ -6,9 +6,9 @@ class Dispatcher {
   private $default_database;
   public function __construct($route) {
     $this->route = $route;
-    $this->error_log = new strangerfw\utils\Logger('ERROR');
-    $this->info_log = new strangerfw\utils\Logger('INFO');
-    $this->debug = new strangerfw\utils\Logger('DEBUG');
+    $this->error_log = new \strangerfw\utils\Logger('ERROR');
+    $this->info_log = new \strangerfw\utils\Logger('INFO');
+    $this->debug = new \strangerfw\utils\Logger('DEBUG');
   }
 
   public function dispatcheController() {
