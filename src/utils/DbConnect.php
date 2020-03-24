@@ -28,9 +28,9 @@ class DbConnect {
         $this->username,
         $this->password,
         [
-          PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-          PDO::ATTR_EMULATE_PREPARES => false, 
-          PDO::ATTR_FETCH_TABLE_NAMES => 1
+          \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+          \PDO::ATTR_EMULATE_PREPARES => false, 
+          \PDO::ATTR_FETCH_TABLE_NAMES => 1
         ]
       );
       $this->debug->log("dbh:".print_r($dbh, true));

@@ -1,5 +1,5 @@
 <?php
-namespace strangerfw\core\contoroller;
+namespace strangerfw\core\controller;
 
 class BaseController {
   //  ログ関連
