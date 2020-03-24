@@ -25,10 +25,11 @@ class BaseController {
   protected $template = null;
 
   public function __construct($database, $uri, $url) {
-    \strangerfw\core\Session::sessionStart();
     $this->error_log = new \strangerfw\utils\Logger('ERROR');
     $this->info_log = new \strangerfw\utils\Logger('INFO');
     $this->debug = new \strangerfw\utils\Logger('DEBUG');
+    $this->debug->log("BaseController::__construct()");
+    \strangerfw\core\Session::sessionStart();
     $this->debug->log("BaseController::__construct() database:".print_r($database, true));
     $this->dbConnect = new \strangerfw\utils\DbConnect();
     $this->dbConnect->setConnectionInfo($database);
@@ -97,9 +98,9 @@ class BaseController {
    */
   public function beforeAction() {
     if ($this->auth_check && in_array($this->action, $this->auth_check)) {
-      $auth = Authentication::isAuth();
+      $auth = \strangerfw\Authentication::isAuth();
       if($auth){
-        if ($this->role_ids && !Authentication::roleCheck($this->role_ids, $this->action)){
+        if ($this->role_ids && \strangerfw\Authentication::roleCheck($this->role_ids, $this->action)){
           $this->redirect(DOCUMENT_ROOT);
           exit();
         }

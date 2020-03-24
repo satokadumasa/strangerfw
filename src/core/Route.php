@@ -6,7 +6,7 @@ class Route {
   private $default_actions = ['index', 'new', 'edit', 'create', 'save', 'update', 'confirm', 'show', 'delete'];
   private $default_need_id_actions = ['new', 'edit', 'show', 'delete'];
   private $default_need_id_confirm_str = ['confirm'];
-  private $url_not_found = array('controller' => 'DefaultController', 'action' => 'index', 'uri' => '/Default/index/');
+  private $url_not_found = ['controller' => 'DefaultController', 'action' => 'index', 'uri' => '/Default/index/'];
 
   public $error_log;
   public $info_log;
@@ -23,7 +23,7 @@ class Route {
   }
 
   public function setRoute ($uri, $controller, $action) {
-    $this->route[$uri] = array('controller' => $controller, 'action' => $action);
+    $this->route[$uri] = ['controller' => $controller, 'action' => $action];
   }
 
   private function setDefaultRoutes() {
@@ -57,10 +57,10 @@ class Route {
         }
 
         if($namespace){
-          $this->route[$uri] = array('namespace' => $namespace, 'controller' => $controller.'Controller', 'action' => $action);
+          $this->route[$uri] = ['namespace' => $namespace, 'controller' => $controller.'Controller', 'action' => $action];
         }
         else{
-          $this->route[$uri] = array('controller' => $controller.'Controller', 'action' => $action);
+          $this->route[$uri] = ['controller' => $controller.'Controller', 'action' => $action];
         }
         // $this->debug->log("Route::setDefaultRoutes() route:".print_r($this->route, true));
       }
@@ -102,10 +102,10 @@ class Route {
   public function getFileList($dir) {
     $files = scandir($dir);
     $files = array_filter($files, function ($file) { // 注(1)
-      return !in_array($file, array('.', '..'));
+      return !in_array($file, ['.', '..']);
     });
 
-    $list = array();
+    $list = [];
     foreach ($files as $file) {
       $fullpath = rtrim($dir, '/') . '/' . $file; // 注(2)
       if (is_file($fullpath)) {

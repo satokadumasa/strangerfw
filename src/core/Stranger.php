@@ -33,7 +33,7 @@ class Stranger {
       echo "  connected\n";
       echo "  Stranger::con() end\n";
       $this->debug->log("Stranger::execMigration() database:".print_r($this->dbh, true));
-    } catch (PDOException $e) {
+    } catch (\PDOException $e) {
       echo "  can not connect to database\n";
       echo "  >>>>".$e->getMessage()."\n";
     }
@@ -132,7 +132,7 @@ EOM;
       $stmt = $dbh->prepare($sql);
       $stmt->execute();
       echo "  createSchema end\n";
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       echo "Error:".$e->getMessage()."\n";
     }
   }
@@ -314,7 +314,7 @@ EOM;
           echo "      ========== Migrate ".$migration_file." up end   ==========\n";
         }
       }
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       $this->debug->log("Stranger::execMigration() error:".$e->getMessage());
       echo "Stranger::execMigration() error\n";
       echo "  >>>>".$e->getMessage()."\n";
@@ -420,7 +420,7 @@ EOM;
           $method
         );
       }
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       echo "    ".$e->getMessage()."\n";
       $this->debug->log("Stranger::templateGenerate() :".$e->getMessage());
     }
@@ -546,7 +546,7 @@ EOM;
       }
       $fp .= \Spyc::YAMLDump($table_config,true , true, true);
       file_put_contents(SCHEMA_PATH.$this->argv[3].".yaml", $fp);
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       echo "  Can not create schema file\n";
       echo "  >>>>".$e->getMessage()."\n";
     }

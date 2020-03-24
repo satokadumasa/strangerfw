@@ -43,7 +43,7 @@
       $this->dbh->commit();
       $url = BASE_URL . '<!----class_name---->' . '/show/' . $<!----table_name---->->primary_key_value . '/';
       $this->redirect($url);
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       $this->debug->log("<!----class_name---->Controller::create() error:" . $e->getMessage());
       $this->set('Title', '<!----class_name----> Save Error');
       $this->set('error_message', '保存ができませんでした。');
@@ -61,7 +61,7 @@
       $this->set('Title', '<!----class_name----> Edit');
       $this->set('<!----class_name---->', $datas['<!----class_name---->']);
       $this->set('datas', $datas);
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       $this->debug->log("<!----class_name---->Controller::edit() error:" . $e->getMessage());
     }
   }
@@ -73,7 +73,7 @@
       $<!----table_name---->->delete($this->request['id']);
       $this->dbh->commit();
       $url = BASE_URL . '<!----class_name---->' . '/index/';
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       $this->debug->log("UsersController::delete() error:" . $e->getMessage());
     }
   }

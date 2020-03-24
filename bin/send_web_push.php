@@ -1,19 +1,18 @@
 <?php
 // define( 'API_ACCESS_KEY', 'AAAAMuyypx0:APA91bGcOP2GNgdnM596ot6fEtFvQncrYfYlKTJQgjCRjev4rc0gdPKCQpdTIxKYxLKBwab867MxLJmWyLh9ynRP417iVDPCyoyAnYMVfIAhB7IIbT14rrULLMwBx7flx56zRzLCqMQg');
 define( 'API_ACCESS_KEY', 'AIzaSyD-eOVF5bcHJinjjVwz2M61v3qfgg_qMUM');
-$msg = array(
-               'message'       => 'Wakeup Wakeup!!',
-               'title'         => 'Wakeup call !',
-            );
+$msg = [
+           'message'       => 'Wakeup Wakeup!!',
+           'title'         => 'Wakeup call !',
+        ];
 $fields = array(
           'registration_id'  => 218719495965,
           'data'              => $msg
          );
-$headers = array
-           (
+$headers = [
             'Authorization: key=' . API_ACCESS_KEY,
             'Content-Type: application/json'
-            );
+          ];
 
 $ch = curl_init();
 curl_setopt($ch,CURLOPT_URL, '//gcm-http.googleapis.com/gcm/send');

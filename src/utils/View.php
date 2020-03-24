@@ -128,7 +128,7 @@ class View {
           echo $value . "\n";
           $document[] = $value;
         }
-      } catch (Exception $e) {
+      } catch (\Exception $e) {
         $this->debug->log("View::framingView() error:" . $e->getMessage());
       }
     }
