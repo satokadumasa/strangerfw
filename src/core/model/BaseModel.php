@@ -308,20 +308,23 @@ class BaseModel {
    * @params array $joins
    */
   public function processJoins(&$tmp_sql, $joins) {
-    foreach($joins as $model_name => $join) {
-      $model_name = !is_numeric($model_name) ? $model_name : $join;
+    $this->debug->log("BaseModel::processJoins() joins:".print_r($joins, true));
+    if(is_array($joins) && count($joins) > 0) {
+      foreach($joins as $model_name => $join) {
+        $model_name = !is_numeric($model_name) ? $model_name : $join;
 
-      $obj = new $model_name($this->dbh);
+        $obj = new $model_name($this->dbh);
 
-      if(is_array($this->belongthTo)  && array_key_exists($model_name, $this->belongthTo)){
-        $belongth = new $model_name($this->dbh);
-        $this->joinBelongthTo($belongth, $this->belongthTo[$model_name], $join, $tmp_sql);
-        continue;
-      }
-      if(is_array($this->has) && array_key_exists($model_name, $this->has)) {
-        $has = new $model_name($this->dbh);
-        $this->joinHas($has, $this->has[$model_name], $join, $tmp_sql);
-        continue;
+        if(is_array($this->belongthTo)  && array_key_exists($model_name, $this->belongthTo)){
+          $belongth = new $model_name($this->dbh);
+          $this->joinBelongthTo($belongth, $this->belongthTo[$model_name], $join, $tmp_sql);
+          continue;
+        }
+        if(is_array($this->has) && array_key_exists($model_name, $this->has)) {
+          $has = new $model_name($this->dbh);
+          $this->joinHas($has, $this->has[$model_name], $join, $tmp_sql);
+          continue;
+        }
       }
     }
   }

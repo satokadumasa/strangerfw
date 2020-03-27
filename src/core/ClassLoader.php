@@ -6,7 +6,7 @@ class ClassLoader {
     try{
 
       $debug = new \strangerfw\utils\Logger('DEBUG');
-//       $debug->log("ClassLoader::loadClass() search class is ${class}");
+      $debug->log("ClassLoader::loadClass() search class is ${class}");
       $scan_dir_list = [
             CONTROLLER_PATH,
             MODEL_PATH,
@@ -24,6 +24,7 @@ class ClassLoader {
           $file_name = $directory.$class.'.php';
 
           if (file_exists($file_name)) {
+            $debug->log("ClassLoader::loadClass() Requires :${class}");
             require_once $file_name;
             return true;
           }
@@ -51,7 +52,7 @@ class ClassLoader {
   private static function getDirList($dir) {
     $debug = new \strangerfw\utils\Logger('DEBUG');
     $files = scandir($dir);
-    $debug->log("ClassLoader::getDirList() files:".print_r($files, true));
+    // $debug->log("ClassLoader::getDirList() files:".print_r($files, true));
     $files = array_filter($files, function ($file) {
       return !in_array($file, ['.', '..', '.gitkeep']);
     });

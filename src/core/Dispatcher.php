@@ -15,24 +15,19 @@ class Dispatcher {
     try {
       $route = $this->route->findRoute($_SERVER['REQUEST_URI']);
       if($route) {
-        $this->debug->log("Dispatcher::dispatcheController() route:".print_r($route, true));
         $controller_name = $route['controller'];
-        // $this->debug->log("Dispatcher::dispatcheController() controller_name:".print_r($controller_name, true));
         $controller_name = "\\".$controller_name;
-        $this->debug->log("Dispatcher::dispatcheController() controller_name:".$controller_name);
         $controller = new $controller_name($route['uri'], $_SERVER['REQUEST_URI']);
-        $this->debug->log("Dispatcher::dispatcheController() CH-01");
+        $this->debug->log("Dispatcher::dispatcheController() CH-01:");
         $controller->setAction($route['action']);
-        $this->debug->log("Dispatcher::dispatcheController() CH-02");
+        $this->debug->log("Dispatcher::dispatcheController() CH-02:");
         $controller->beforeAction();
-        $this->debug->log("Dispatcher::dispatcheController() CH-03");
         $action = $route['action'];
-        $this->debug->log("Dispatcher::dispatcheController() CH-04");
         $controller->$action();
-        $this->debug->log("Dispatcher::dispatcheController() CH-05");
         $controller->afterAction();
-        $this->debug->log("Dispatcher::dispatcheController() CH-06");
+        $this->debug->log("Dispatcher::dispatcheController() call render");
         $controller->render();
+        $this->debug->log("Dispatcher::dispatcheController() END:");
       }
       exit();
     } catch (\Exception $e) {

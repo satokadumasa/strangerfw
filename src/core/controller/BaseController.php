@@ -30,30 +30,36 @@ class BaseController {
     $this->debug = new \strangerfw\utils\Logger('DEBUG');
     $this->debug->log("BaseController::__construct()");
     \strangerfw\core\Session::sessionStart();
-    $this->debug->log("BaseController::__construct() database:".print_r($database, true));
+    $this->debug->log("BaseController::__construct() START");
     $this->dbConnect = new \strangerfw\utils\DbConnect();
+    $this->debug->log("BaseController::__construct() CH-01");
     $this->dbConnect->setConnectionInfo($database);
+    $this->debug->log("BaseController::__construct() CH-02");
     $this->dbh = $this->dbConnect->createConnection();
+    $this->debug->log("BaseController::__construct() CH-03");
     $this->defaultSet();
+    $this->debug->log("BaseController::__construct() CH-04");
     $this->setRequest($uri, $url);
+    $this->debug->log("BaseController::__construct() CH-05");
     $this->view = new \strangerfw\utils\View();
   }
 
   protected function defaultSet(){
     $this->set('document_root',DOCUMENT_ROOT);
+    $log_out_str = "";
     if (isset($_SESSION[COOKIE_NAME]['error_message'])) {
       $this->set('error_message', $_SESSION[COOKIE_NAME]['error_message']);
     }
-    //    $this->set('Sitemenu',)
+    $this->set('Sitemenu',$log_out_str);
     $session = \strangerfw\core\Session::get();
-    // $menu_helper = new MenuHelper($session['Auth']);
+    $menu_helper = new \MenuHelper($session['Auth']);
     if (isset($session['Auth'])) {
-      // $log_out_str = $menu_helper->site_menu($session['Auth'], 'logined');
+      $log_out_str = $menu_helper->site_menu($session['Auth'], 'logined');
       $this->auth = $session['Auth'];
     }
     else {
-      // $log_out_str = $menu_helper->site_menu($session['Auth'], 'nologin');
-      // $log_out_str = "<a href='".DOCUMENT_ROOT."login/'>Login</a>";
+      $log_out_str = $menu_helper->site_menu($session['Auth'], 'nologin');
+      $log_out_str = "<a href='".DOCUMENT_ROOT."login/'>Login</a>";
     }
     $this->set('Sitemenu',$log_out_str);
     \strangerfw\core\Session::deleteMessage('error_message');
