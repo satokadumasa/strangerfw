@@ -8,7 +8,6 @@ class Authentication{
     $auths = new User($dbh);
     $auth = $auths->auth($request);
     if ($auth){
-      // $debug->log("Authentication::auth() request:".print_r($request, true));
       $user_cookie_name = \strangerfw\utils\StringUtil::makeRandStr(USER_COOKIE_NAME_LENGTH);
       setcookie(COOKIE_NAME, $user_cookie_name, time() + COOKIE_LIFETIME);
       $data['Auth'] = $auth;

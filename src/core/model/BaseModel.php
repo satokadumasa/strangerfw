@@ -40,7 +40,7 @@ class BaseModel {
       $columns = \Spyc::YAMLLoad(SCHEMA_PATH.$this->table_name.".yaml");
       $this->column_conf = $columns[$this->table_name];
     } catch(\Exception $e) {
-      $this->debug->log("       BaseModel::__construct() error:" . $e->getMessage());
+      $this->debug->log("BaseModel::__construct() error:" . $e->getMessage());
     }
   }
 
@@ -77,7 +77,6 @@ class BaseModel {
    */
   public function find($type = 'all') {
     $this->debug->log("------------------------------------------------------");
-    $this->debug->log("BaseModel::find() START");
     $datas = [];
     $primary_keys = [];
 
@@ -285,7 +284,6 @@ class BaseModel {
    * @return steing column_str
    */
   private function extendSelects() {
-      $this->debug->log("DefaultController::extendSelects() CH-01");
       $column_str = '';
       if($this->columns) {
           foreach($this->columns as $model_name => $columns) {
@@ -295,7 +293,6 @@ class BaseModel {
               }
           }
       }
-      $this->debug->log("DefaultController::extendSelects() sql:${column_str}");
       return $column_str;
   }
 
@@ -308,7 +305,6 @@ class BaseModel {
    * @params array $joins
    */
   public function processJoins(&$tmp_sql, $joins) {
-    $this->debug->log("BaseModel::processJoins() joins:".print_r($joins, true));
     if(is_array($joins) && count($joins) > 0) {
       foreach($joins as $model_name => $join) {
         $model_name = !is_numeric($model_name) ? $model_name : $join;

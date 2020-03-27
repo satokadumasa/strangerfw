@@ -273,7 +273,6 @@ EOM;
       $this->debug->log("Stranger::execMigration() CH-03\n");
       if (isset($this->argv[2]) && $versions[0] == 'version') {
         echo "    Migrate drop table and add column.\n";
-        $this->debug->log("Stranger::execMigration() Migrate drop table and add column");
 
         $migrate_classes = $migrate->where('version', '>', $versions[1])->desc('version')->find('all');
 

@@ -30,17 +30,11 @@ class BaseController {
     $this->debug = new \strangerfw\utils\Logger('DEBUG');
     $this->debug->log("BaseController::__construct()");
     \strangerfw\core\Session::sessionStart();
-    $this->debug->log("BaseController::__construct() START");
     $this->dbConnect = new \strangerfw\utils\DbConnect();
-    $this->debug->log("BaseController::__construct() CH-01");
     $this->dbConnect->setConnectionInfo($database);
-    $this->debug->log("BaseController::__construct() CH-02");
     $this->dbh = $this->dbConnect->createConnection();
-    $this->debug->log("BaseController::__construct() CH-03");
     $this->defaultSet();
-    $this->debug->log("BaseController::__construct() CH-04");
     $this->setRequest($uri, $url);
-    $this->debug->log("BaseController::__construct() CH-05");
     $this->view = new \strangerfw\utils\View();
   }
 

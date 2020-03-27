@@ -18,16 +18,12 @@ class Dispatcher {
         $controller_name = $route['controller'];
         $controller_name = "\\".$controller_name;
         $controller = new $controller_name($route['uri'], $_SERVER['REQUEST_URI']);
-        $this->debug->log("Dispatcher::dispatcheController() CH-01:");
         $controller->setAction($route['action']);
-        $this->debug->log("Dispatcher::dispatcheController() CH-02:");
         $controller->beforeAction();
         $action = $route['action'];
         $controller->$action();
         $controller->afterAction();
-        $this->debug->log("Dispatcher::dispatcheController() call render");
         $controller->render();
-        $this->debug->log("Dispatcher::dispatcheController() END:");
       }
       exit();
     } catch (\Exception $e) {
