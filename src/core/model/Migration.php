@@ -10,14 +10,7 @@ class Migration extends BaseModel {
   public $belongthTo  = null;
   public $has = null;
   public $has_many_and_belongs_to = null;
-/*
-  public $columns = [
-    'version' => ['type' => 'int', 'length' => 11, 'null' => false, 'key' => 'PRI', 'default' => null, ], 
-    'name' => ['type' => 'varchar', 'length' => 32, 'null' => false, 'key' => '', 'default' => null,] , 
-    'created_at' => ['type' => 'datetime', 'length' => 19, 'null' => false, 'key' => 'PRI', 'default' => null,] , 
-    'modified_at' => ['type' => 'datetime', 'length' => 19, 'null' => false, 'key' => 'PRI', 'default' => null,] , 
-  ];
-*/
+
   public function __construct(&$dbh = null) {
     echo "  Migration::__construct() \n";
     parent::__construct($dbh);
@@ -38,8 +31,8 @@ INSERT INTO $this->table_name (
 );
 EOM;
     $stmt = $this->dbh->prepare($sql);
-    $stmt->bindValue('version', $data[$this->model_name]['version'], PDO::PARAM_INT);
-    $stmt->bindValue('name', $data[$this->model_name]['name'], PDO::PARAM_STR);
+    $stmt->bindValue('version', $data[$this->model_name]['version'], \PDO::PARAM_INT);
+    $stmt->bindValue('name', $data[$this->model_name]['name'], \PDO::PARAM_STR);
     $stmt->execute();
   }
 

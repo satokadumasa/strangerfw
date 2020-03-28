@@ -265,12 +265,12 @@ EOM;
       $this->debug->log("Stranger::execMigration() Start\n");
       $migration_files = $this->getFileList(MIGRATION_PATH);
       $this->debug->log("Stranger::execMigration() dbh:".print_r($this->dbh, true));
-      $this->debug->log("Stranger::execMigration() CH-01\n");
+      $this->debug->log("Stranger::execMigration() CH-01");
       $migrate = new \strangerfw\core\model\Migration($this->dbh);
-      $this->debug->log("Stranger::execMigration() CH-02\n");
+      $this->debug->log("Stranger::execMigration() CH-02");
       $versions = [];
       if(isset($this->argv[2])) $versions = explode('=', $this->argv[2]);
-      $this->debug->log("Stranger::execMigration() CH-03\n");
+      $this->debug->log("Stranger::execMigration() CH-03");
       if (isset($this->argv[2]) && $versions[0] == 'version') {
         echo "    Migrate drop table and add column.\n";
 
@@ -308,7 +308,10 @@ EOM;
           echo "      ========== Migrate ".$migration_file." up start ==========\n";
           require_once $value;
           $migration = new $migration_file($this->default_database);
+          $this->debug->log("Stranger::execMigration() migration is " . get_class($migration));
+          $this->debug->log("Stranger::execMigration() Call up()");
           $migration->up();
+          $this->debug->log("Stranger::execMigration() INSER VERSION TO migration table");
           $migrate->insert(['Migration' => ['version' => $varsion, 'name' => $migration_file]]);
           echo "      ========== Migrate ".$migration_file." up end   ==========\n";
         }
