@@ -37,6 +37,7 @@ class BaseModel {
       $this->error_log = new \strangerfw\utils\Logger('ERROR');
       $this->info_log = new \strangerfw\utils\Logger('INFO');
       $this->debug = new \strangerfw\utils\Logger('DEBUG');
+      $this->debug->log('BaseModel::__construct()');
       $columns = \Spyc::YAMLLoad(SCHEMA_PATH.$this->table_name.".yaml");
       $this->column_conf = $columns[$this->table_name];
     } catch(\Exception $e) {
@@ -86,7 +87,7 @@ class BaseModel {
 
     $this->debug->log("BaseModel::find() sql:".$sql);
     $stmt = $this->dbh->prepare($sql);
-    foreach ($this->conditions as $k => $v) {
+    foreach ($this->conditions as $v) {
       $arr = explode('.', $v['column_name']);
       $value = $v['value'];
       $col_name = $arr[count($arr) - 1];
@@ -99,12 +100,12 @@ class BaseModel {
         case 'modified_at':
           if ($v['operator'] != 'IS NULL') {
             $value = $value ? $value : 'NOW()';
-            $stmt->bindParam($column_name, $value, PDO::PARAM_STR);
+            $stmt->bindParam($column_name, $value, \PDO::PARAM_STR);
           }
           break;
         default:
           if ($v['operator'] != 'IS NULL' && $v['operator'] != 'IN') {
-            $param_type = is_numeric($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+            $param_type = is_numeric($value) ? \PDO::PARAM_INT : \PDO::PARAM_STR;
             $stmt->bindValue($column_name, $value, $param_type);
           }
           break;
@@ -153,6 +154,8 @@ class BaseModel {
    * @return $data
    */
   public function find_by_sql($sql) {
+    $data = [];
+    $stmt = null;
     $stmt = $this->dbh->prepare($sql);
     $stmt->execute();
     foreach ($stmt->fetchAll() as $row) {
@@ -239,10 +242,10 @@ class BaseModel {
 
     $sql = "SELECT ";
 
-    if($this->columns) 
+    if($this->columns)
       $sql .= $this->extendSelects();
     else
-      foreach ($relationship_columuns as $value) 
+      foreach ($relationship_columuns as $value)
         $sql .= $value;
 
     $sql .= " FROM " . $this->table_name . " as " . $this->model_name . " ";
@@ -265,7 +268,7 @@ class BaseModel {
     }
 
     if (count($this->ascs) > 0) {
-      foreach ($this->ascs as $key => $asc) {
+      foreach ($this->ascs as $asc) {
         $sql .= $asc;
       }
     }
@@ -281,7 +284,7 @@ class BaseModel {
   /**
    * extendSelects()
    *
-   * @return steing column_str
+   * @return string column_str
    */
   private function extendSelects() {
       $column_str = '';
@@ -309,8 +312,6 @@ class BaseModel {
       foreach($joins as $model_name => $join) {
         $model_name = !is_numeric($model_name) ? $model_name : $join;
 
-        $obj = new $model_name($this->dbh);
-
         if(is_array($this->belongthTo)  && array_key_exists($model_name, $this->belongthTo)){
           $belongth = new $model_name($this->dbh);
           $this->joinBelongthTo($belongth, $this->belongthTo[$model_name], $join, $tmp_sql);
@@ -335,7 +336,7 @@ class BaseModel {
    * @params array $join
    * @params string $tmp_sql
    *
-   * @return none
+   * @return
    */
   public function joinBelongthTo($obj, $cond, $joins, &$tmp_sql) {
     $tmp_sql .= $cond['JOIN_COND'] . ' JOIN ' . $obj->table_name . " AS  " . $obj->model_name . " ON ";
@@ -358,11 +359,11 @@ class BaseModel {
    * @params array $join
    * @params string $tmp_sql
    *
-   * @return none
+   * @return
    */
   public function joinHas($has, $cond, $joins, &$tmp_sql) {
     $tmp_sql .= ' ' . $cond['JOIN_COND'] . ' JOIN ' . $has->table_name . ' AS ' . $has->model_name .' ';
-    $tmp_sql .= ' ON ' . $has->model_name . '.' 
+    $tmp_sql .= ' ON ' . $has->model_name . '.'
              . $cond['FOREIGN_KEY'] . '=' .$this->model_name . '.' . $this->primary_key . ' ';
     if($joins) $has->processJoins($tmp_sql, $joins);
   }
@@ -373,8 +374,8 @@ class BaseModel {
    * 抽出対象カラムの指定
    *
    * @params array $cilumns
-   * 
-   * @return none
+   *
+   * @return
    */
   public function select($columns = [])
   {
@@ -388,7 +389,7 @@ class BaseModel {
    * @params string relationship_sql
    * @params Model $model_name
    * @params array $relationship_conditions
-   * @return none
+   * @return
    */
   protected function addRelationshipSql($relationship_sql, $model_name, $relationship_conditions) {
     $model_class_name = $model_name;
@@ -425,7 +426,7 @@ class BaseModel {
         $value = "";
 
         $col_arr = explode('.', $condition['column_name']);
-        foreach ($condition['value'] as $k => $v) {
+        foreach ($condition['value'] as $v) {
           $val = $this->setValue($col_arr[count($col_arr) - 1], $v);
           $value .= $value ? "," . $val : $val;
         }
@@ -563,12 +564,13 @@ class BaseModel {
           $form[$this->model_name][$this->primary_key] != null
         )
       ) {
-        $sql = $this->createModifySql($form[$this->model_name]);  // CASE MODIFY
+          $sql = $this->createModifySql($form[$this->model_name]);  // CASE MODIFY
       }
       else {
         unset($form[$this->model_name][$this->primary_key]);
         $sql = $this->createInsertSql();  // CASE INSERT
       }
+      $this->debug->log("BaseModel::save() SQL(1):". $sql);
 
       if($this->has){
         $hssModels = array_keys($this->has);
@@ -598,6 +600,8 @@ class BaseModel {
       }
 
       $stmt->execute();
+      $this->debug->log("BaseModel::save() SQL:". $stmt->getSQL);
+
       //  従属モデルへのセーブ処理
       $this->primary_key_value = $this->dbh->lastInsertId($this->primary_key);
       if (isset($form[$this->model_name])) {
@@ -621,7 +625,7 @@ class BaseModel {
             continue;
         }
       }
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       throw new \Exception($e->getMessage(), 1);
     }
   }
@@ -631,6 +635,7 @@ class BaseModel {
     $colums_str = null;
     $values_str = null;
     foreach ($col_names as $col_name) {
+      $this->debug->log("BaseModel::createInsertSql() col_name:${col_name}");
       if ($col_name === $this->primary_key) continue;
 
       $colums_str .= $colums_str ? ", " . $col_name : $col_name;
@@ -726,18 +731,18 @@ class BaseModel {
       case 'tinyint':
       case 'smallint':
       case 'bigint':
-        return PDO::PARAM_INT;
+        return \PDO::PARAM_INT;
         break;
       case 'float':
       case 'double':
-        return PDO::PARAM_INT;
+        return \PDO::PARAM_INT;
         break;
       case 'bool':
-        return PDO::PARAM_BOOL;
+        return \PDO::PARAM_BOOL;
         break;
       case 'set':
       default:
-        return PDO::PARAM_STR;
+        return \PDO::PARAM_STR;
         break;
     }
   }
@@ -758,7 +763,7 @@ class BaseModel {
    */
   public function is_hash($data) {
     if (is_array($data)){
-      foreach ($data as $key => $value) {
+      foreach ($data as $value) {
         if (!is_numeric($value)) continue;
         else return true;
       }
@@ -770,7 +775,7 @@ class BaseModel {
   public function createForm() {
     $keys = array_keys($this->column_conf);
     $form = [];
-    foreach ($keys as $key => $value) {
+    foreach ($keys as $value) {
       $form[$this->model_name][$value] = '';
     }
     return $form;

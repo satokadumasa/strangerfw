@@ -2,7 +2,7 @@
 namespace strangerfw\utils;
 
 /**
- * 
+ *
  */
 class View {
   protected $layout = 'default';
@@ -19,7 +19,7 @@ class View {
 
   /**
    * Layout template set.
-   * 
+   *
    * @param string $layout layout filename
    */
   public function setLayout($layout){
@@ -28,7 +28,7 @@ class View {
 
   /**
    * render view.
-   * 
+   *
    * @param string $controller_class_name Controller class name
    * @param string $action action name
    * @param array $datas set data
@@ -41,7 +41,7 @@ class View {
 
   /**
    * Set data to template
-   * 
+   *
    * @param array $datas set data
    * @param string $fileatime template file name
    * @param string $controller_class_name Controller class name
@@ -73,10 +73,10 @@ class View {
             //  変数展開
             /*****
              * 例）
-             *   string:Array ( 
-             *     [0] => Array ( [0] => [1] => [2] => ) 
-             *     [1] => Array ( [0] => UserList:1:name [1] => UserList:2:name [2] => UserList:3:name ) 
-             *   ) 
+             *   string:Array (
+             *     [0] => Array ( [0] => [1] => [2] => )
+             *     [1] => Array ( [0] => UserList:1:name [1] => UserList:2:name [2] => UserList:3:name )
+             *   )
              */
             $value = $this->convertKeyToValue($value, $matchs[1], $datas);
           }
@@ -241,7 +241,7 @@ class View {
    *
    */
   protected function renderPartial($value, $matchs, $controller_class_name, $action, $document, $datas) {
-    //  部分テンプレート読み込み  
+    //  部分テンプレート読み込み
     $renderpartial = $matchs[1][0];
     if (strpos($value, 'CONTROLLER/ACTION') > 0) {
       if (isset($action)) {
@@ -253,7 +253,7 @@ class View {
     }
 
     $arr = explode(':', $renderpartial);
-    
+
     $partial_tpl_filename = $this->view_template_path . $arr[1] . '.tpl';
     $this->framingView($document, $datas , $partial_tpl_filename);
   }
@@ -328,11 +328,11 @@ class View {
 
   /**
    *  SELECT OPTIONタグ生成メソッド
-   *  
+   *
    *  @param array $selects    : 選択済みID
    *  @param array $option_data : 選択枝データ
    *  @param array $value_name : 選択名
-   *  @return none
+   *  @return
    */
   protected function selectOption($selects, $option_data, $value_name){
     $options_str = '';
@@ -345,12 +345,12 @@ class View {
 
   /**
    *  SELECT OPTIONタグ生成メソッド
-   *  
+   *
    *  @param array $select    : 選択済みID
    *  @param array $option_data : 選択枝データ
    *  @param array $value_name : 選択名
-   *  @param string $column_name : カラム名 
-   *  @return none
+   *  @param string $column_name : カラム名
+   *  @return
    */
   protected function radiobutton($select, $class_name, $option_data, $column_name, $index_name){
     $options_str = "";
@@ -363,12 +363,12 @@ class View {
 
   /**
    *  SELECT OPTIONタグ生成メソッド
-   *  
+   *
    *  @param array $selects    : 選択済みID
    *  @param array $option_data : 選択枝データ
    *  @param array $value_name : 選択名
-   *  @param string $column_name : カラム名 
-   *  @return none
+   *  @param string $column_name : カラム名
+   *  @return
    */
   protected function checkbox($selects, $class_name, $option_data, $column_name, $index_name){
     $options_str = "";
@@ -382,7 +382,7 @@ class View {
 
   /**
    *  キー置換メソッド
-   *  
+   *
    *  @param string $context    : 置換対象文字列
    *  @param array $matchs : 置換対象キー文字列
    *  @param array $datas set data
@@ -411,10 +411,10 @@ class View {
 
   /**
    *  イテレータ表示機能
-   *  
+   *
    *  @param int $i : Line counter
-   *  @param array $datas : 表示用データ  
-   *  @param string $file_context : テンプレート内容  
+   *  @param array $datas : 表示用データ
+   *  @param string $file_context : テンプレート内容
    */
   public function viewIterator($i, $datas, $file_context) {
     $this->debug->log("View::viewIterator() Start");
@@ -454,7 +454,7 @@ class View {
         break;
       }
       else if (strpos($value, '<!----value:')){
-        $value = $this->convertKeyToValue($value, $matchs[1], $datas);        
+        $value = $this->convertKeyToValue($value, $matchs[1], $datas);
       }
       echo $value;
     }

@@ -89,6 +89,11 @@ class Stranger {
         $arr = explode(':', $this->argv[1]);
         exit();
         break;
+      case 'db:seeds':
+          echo "  exec db:seeds\n";
+          $conf = \strangerfw\core\Config::get('database.config');
+          $this->con($conf);
+          \strangerfw\utils\LoadSeed::load($this->dbh, $this->argv[2]);
       case '-d':
         echo "  run destroy\n";
         $this->executeDestroies();
@@ -417,8 +422,8 @@ EOM;
       }
       foreach ($templates as $key => $method) {
         $this->createViewTemplate(
-          SCAFFOLD_TEMPLATE_PATH . "/views/${method}.tpl", 
-          $view_template_folder . $method.'.tpl', 
+          SCAFFOLD_TEMPLATE_PATH . "/views/${method}.tpl",
+          $view_template_folder . $method.'.tpl',
           $method
         );
       }

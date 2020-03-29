@@ -21,7 +21,7 @@ class SendNotify {
   }
 
   public function sendNotify(){
-    $user = new User($this->dbh);
+    $user = new \User($this->dbh);
     $users = $user->where('User.notified_at', 'IS NULL', '')->find('all');
     foreach ($users as $key => $form) {
       $body = null;
@@ -33,7 +33,7 @@ class SendNotify {
       $this->debug->log("SendNotify::sendNotify() form:".print_r($form, true));
       unset($form['User']['password']);
       unset($form['User']['authentication_key']);
-      $user2 = new User($this->dbh);
+      $user2 = new \User($this->dbh);
       $user2->update($form, 'send_notify');
     }
   }

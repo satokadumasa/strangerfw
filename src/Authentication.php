@@ -5,7 +5,7 @@ namespace strangerfw;
 class Authentication{
   public static function auth(&$dbh, $request){
     $debug = new \strangerfw\utils\Logger('DEBUG');
-    $auths = new User($dbh);
+    $auths = new \User($dbh);
     $auth = $auths->auth($request);
     if ($auth){
       $user_cookie_name = \strangerfw\utils\StringUtil::makeRandStr(USER_COOKIE_NAME_LENGTH);
