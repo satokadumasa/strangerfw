@@ -420,7 +420,10 @@ EOM;
       if (!file_exists($view_template_folder)) {
         if(!mkdir($view_template_folder)) return false;
       }
-      foreach ($templates as $key => $method) {
+      foreach ($templates as $method) {
+        echo "------------- Create ${method} template.\n";
+        echo "------------- Read template : " . SCAFFOLD_TEMPLATE_PATH . "/views/${method}.tpl\n";
+
         $this->createViewTemplate(
           SCAFFOLD_TEMPLATE_PATH . "/views/${method}.tpl",
           $view_template_folder . $method.'.tpl',
