@@ -12,7 +12,7 @@ class BaseController {
   protected $dbConnect = null;
   protected $request = [];
   protected $view = null;
-  protected $datas = [];
+  protected $data = [];
 
   public $action = null;
   public $controller_class_name = null;
@@ -119,16 +119,19 @@ class BaseController {
    *
    */
   protected function set($key, $data){
-    $this->datas[$key] = $data;
+    $this->data[$key] = $data;
   }
 
   /**
    *
    */
   public function render(){
+    $this->debug->log("BaseController::render()");
+    $this->debug->log("BaseController::render() data:" . print_r($this->data, true));
     $this->set('SiteTitle', SITE_NAME);
     $this->template = $this->template ? $this->template : $this->action;
-    $this->view->render($this->controller_class_name, $this->template, $this->datas);
+    $this->debug->log("BaseController::render() template[" . $this->template . "]");
+    $this->view->render($this->controller_class_name, $this->template, $this->data);
   }
 
   /**

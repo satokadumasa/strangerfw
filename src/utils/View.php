@@ -33,10 +33,11 @@ class View {
    * @param string $action action name
    * @param array $datas set data
    */
-  public function render($controller_class_name, $action, $datas){
+  public function render($controller_class_name, $action, $data){
+    $this->debug->log("View::render() data:".print_r($data, true));
     $this->layout = $this->view_template_path . '/layout/' . $this->layout . '.tpl';
     $document = [];
-    $this->framingView($document, $datas , $this->layout, $controller_class_name, $action);
+    $this->framingView($document, $data , $this->layout, $controller_class_name, $action);
   }
 
   /**

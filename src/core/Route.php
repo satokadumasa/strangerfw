@@ -3,8 +3,8 @@ namespace strangerfw\core;
 
 class Route {
   public $route = [];
-  private $default_actions = ['index', 'new', 'edit', 'create', 'save', 'update', 'confirm', 'show', 'delete'];
-  private $default_need_id_actions = ['new', 'edit', 'show', 'delete'];
+  private $default_actions = ['index', 'new', 'edit', 'create', 'save', 'update', 'confirm', 'detail', 'delete'];
+  private $default_need_id_actions = ['new', 'edit', 'detail', 'delete'];
   private $default_need_id_confirm_str = ['confirm'];
   private $url_not_found = ['controller' => 'DefaultController', 'action' => 'index', 'uri' => '/Default/index/'];
 

@@ -3,27 +3,27 @@
     $limit = 10 * (isset($this->request['page']) ? $this->request['page'] : 1);
     $offset = 10 * (isset($this->request['page']) ? $this->request['page'] - 1 : 0);
 
-    $datas = $<!----table_name---->->where('<!----class_name---->.id', '>', 0)->limit($limit)->offset($offset)->find('all');
+    $data = $<!----table_name---->->where('<!----class_name---->.id', '>', 0)->limit($limit)->offset($offset)->find('all');
 
     $ref = isset($this->request['page']) ? $this->request['page'] : 0;
     $next = isset($this->request['page']) ? $this->request['page'] + 1 : 2;
 
     $this->set('Title', '<!----class_name----> List');
-    $this->set('datas', $datas);
-    $this->set('<!----class_name---->', $datas);
+    $this->set('data', $data);
+    $this->set('<!----class_name---->', $data);
     $this->set('ref', $ref);
     $this->set('next', $next);
   }
 
   public function show() {
-    $datas = null;
+    $data = null;
     $id = $this->request['id'];
 
     $<!----table_name----> = new <!----class_name---->($this->dbh);
-    $datas = $<!----table_name---->->where('<!----class_name---->.id', '=', $id)->find('first');
+    $data = $<!----table_name---->->where('<!----class_name---->.id', '=', $id)->find('first');
     $this->set('Title', '<!----class_name----> Ditail');
-    $this->set('<!----class_name---->', $datas['<!----class_name---->']);
-    $this->set('datas', $datas);
+    $this->set('<!----class_name---->', $data['<!----class_name---->']);
+    $this->set('data', $data);
   }
 
   public function create() {
@@ -53,14 +53,14 @@
   public function edit() {
     $this->debug->log("<!----class_name---->Controller::edit()");
     try {
-      $datas = null;
+      $data = null;
       $id = $this->request['id'];
 
       $<!----table_name----> = new <!----class_name---->($this->dbh);
-      $datas = $<!----table_name---->->where('<!----class_name---->.id', '=', $id)->find('first');
+      $data = $<!----table_name---->->where('<!----class_name---->.id', '=', $id)->find('first');
       $this->set('Title', '<!----class_name----> Edit');
-      $this->set('<!----class_name---->', $datas['<!----class_name---->']);
-      $this->set('datas', $datas);
+      $this->set('<!----class_name---->', $data['<!----class_name---->']);
+      $this->set('data', $data);
     } catch (\Exception $e) {
       $this->debug->log("<!----class_name---->Controller::edit() error:" . $e->getMessage());
     }
