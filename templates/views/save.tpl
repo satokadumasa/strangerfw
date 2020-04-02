@@ -1,7 +1,6 @@
-<div class="detail">
-  <div class='detail_rows'>
-    <div class='label_clumn'>
-      <!----value:error_message---->
-    </div>
-  </div>
-</div>
+
+                <div class="row">
+                  <div class='col-sm-12 col-md-12 col-lg-12 col-xl-12'>
+                    <!----value:error_message---->
+                  </div>
+                </div>

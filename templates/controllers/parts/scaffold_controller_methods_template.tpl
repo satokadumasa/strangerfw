@@ -1,12 +1,12 @@
   public function index() {
     $<!----table_name----> = new <!----class_name---->($this->dbh);
-    $limit = 10 * (isset($this->request['page']) ? $this->request['page'] : 1);
+    $limit = 10;
     $offset = 10 * (isset($this->request['page']) ? $this->request['page'] - 1 : 0);
 
     $data = $<!----table_name---->->where('<!----class_name---->.id', '>', 0)->limit($limit)->offset($offset)->find('all');
 
-    $ref = isset($this->request['page']) ? $this->request['page'] : 0;
-    $next = isset($this->request['page']) ? $this->request['page'] + 1 : 2;
+    $ref = isset($this->request['page']) && ($this->request['page'] - 1 > 0) ? ($this->request['page'] - 1) : 0;
+    $next = isset($this->request['page']) && ($this->request['page'] > 0) ? $this->request['page'] + 1 : 2;
 
     $this->set('Title', '<!----class_name----> List');
     $this->set('data', $data);
