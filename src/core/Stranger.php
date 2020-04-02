@@ -778,7 +778,8 @@ class Stranger
           }
           continue;
         }
-        if (strpos($value, '<!----detail_columns---->')) {
+        // if (strpos($value, '<!----detail_columns---->')) {
+        if (preg_match('<!----detail_columns---->', $value, $ma)) {
           $value = $this->geterateColumnString($this->argv);
           $fwrite = fwrite($fp, $value);
           if ($fwrite === false) {
@@ -786,12 +787,13 @@ class Stranger
           }
           continue;
         }
-        if (strpos($value, '<!----details---->')) {
+        // if (strpos($value, '<!----details---->')) {
+        if (preg_match('<!----details---->', $value, $ma)) {
           // 詳細画面テンプレート挿入
           echo "insert detail template.\n";
           $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/views/detail.tpl';
           $this->applyTemplate($template_fileatime, $fp, $class_name, null, null);
-          $fwrite = fwrite($fp, $value);
+          // $fwrite = fwrite($fp, $value);
           if ($fwrite === false) {
             return false;
           }

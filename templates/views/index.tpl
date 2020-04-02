@@ -1,7 +1,7 @@
               <h1><!----class_name----> List</h1>
-  <!----iteratior:<!----class_name---->:start---->
-  <!----details---->
-  <!----iteratior:<!----class_name---->:end---->
+              <!----iteratior:<!----class_name---->:start---->
+<!----details---->
+              <!----iteratior:<!----class_name---->:end---->
               <hr>
               <div class="row">
                 <div class='col-sm-12 col-md-12 col-lg-4 col-xl-4 '>
