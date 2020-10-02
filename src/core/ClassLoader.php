@@ -2,6 +2,10 @@
 namespace strangerfw\core;
 
 class ClassLoader {
+  /**
+   * param Object class
+   * return none
+   */
   public static function loadClass($class){
     try{
 
@@ -35,6 +39,10 @@ class ClassLoader {
     }
   }
 
+  /**
+   * param String class_name
+   * return boolean
+   */
   public static function checkStrangerfw($class_name) {
     $debug = new \strangerfw\utils\Logger('DEBUG');
     if(preg_match('/strangerfw/', $class_name, $matches)){
@@ -49,6 +57,10 @@ class ClassLoader {
     return false;
   }
 
+  /**
+   * param String class_name
+   * return String
+   */
   private static function getDirList($dir) {
     $debug = new \strangerfw\utils\Logger('DEBUG');
     $files = scandir($dir);

@@ -3,32 +3,31 @@ namespace strangerfw\core;
 
 class Stranger
 {
-
-  protected $error_log = null;
-
-  protected $info_log = null;
-
+  protected $error = null;
+  protected $info = null;
   protected $debug = null;
-
   protected $argv = [];
-
   protected $table_name = null;
-
   protected $class_name = null;
-
   protected $default_database = null;
-
   protected $dbh = null;
 
+  /**
+   * @param   Array argv
+   * @return  none
+   */
   public function __construct($argv)
   {
     echo "create instance\n";
     $this->argv = $argv;
-    $this->error_log = new \strangerfw\utils\Logger('ERROR');
-    $this->info_log = new \strangerfw\utils\Logger('INFO');
+    $this->error = new \strangerfw\utils\Logger('ERROR');
+    $this->info = new \strangerfw\utils\Logger('INFO');
     $this->debug = new \strangerfw\utils\Logger('DEBUG');
   }
-
+  /**
+   * @param   Array conf
+   * @return  none
+   */
   public function con($conf)
   {
     try {
@@ -50,6 +49,7 @@ class Stranger
 
   /**
    * stranger command execute method
+   * @return  none
    */
   public function execute()
   {
@@ -117,8 +117,7 @@ class Stranger
   /**
    * データベース作成
    *
-   * @param string $connection_param
-   *          接続情報
+   * @param string $connection_param 接続情報
    * @return
    */
   public function createSchema($connection_param)
@@ -155,9 +154,7 @@ class Stranger
   /**
    * migrationテーブル作成
    *
-   * @param
-   *          none
-   * @return
+   * @return  none
    */
   public function initSchema()
   {
@@ -191,6 +188,7 @@ class Stranger
 
   /**
    * テンプレート、モデル、コントローラー生成
+   * @return  none
    */
   public function executeGenerates()
   {
@@ -204,14 +202,17 @@ class Stranger
         echo "    run create scaffold\n";
         $this->scaffoldGenerate();
         break;
+
       case 'controller':
         echo "    run create controller\n";
         $this->controllerGenerate();
         break;
+
       case 'model':
         echo "    run create model\n";
         $this->modelGenerate();
         break;
+
       case 'column':
         echo "    run add column migrations\n";
         $this->maigrateGenerate();
@@ -225,6 +226,7 @@ class Stranger
 
   /**
    * テンプレート、モデル、コントローラー削除
+   * @return  none
    */
   public function executeDestroies()
   {
@@ -258,6 +260,7 @@ class Stranger
   // generate scaffold
   /**
    * キャッフォルドファイル一括生成メソッド
+   * @return  none
    */
   public function scaffoldGenerate()
   {
@@ -270,6 +273,7 @@ class Stranger
   // destroy scaffold
   /**
    * キャッフォルドファイル一括削除メソッド
+   * @return  none
    */
   public function scaffoldDestroy()
   {
@@ -280,6 +284,10 @@ class Stranger
     $this->schemaFileDestroy();
   }
 
+  /**
+   * execMigration()
+   * @return  none
+   */
   public function execMigration()
   {
     echo "  execMigration Start\n";
@@ -287,13 +295,11 @@ class Stranger
       $this->debug->log("Stranger::execMigration() Start\n");
       $migration_files = $this->getFileList(MIGRATION_PATH);
       $this->debug->log("Stranger::execMigration() dbh:" . print_r($this->dbh, true));
-      $this->debug->log("Stranger::execMigration() CH-01");
       $migrate = new \strangerfw\core\model\Migration($this->dbh);
-      $this->debug->log("Stranger::execMigration() CH-02");
       $versions = [];
-      if (isset($this->argv[2]))
+      if (isset($this->argv[2])) {
         $versions = explode('=', $this->argv[2]);
-      $this->debug->log("Stranger::execMigration() CH-03");
+      }
       if (isset($this->argv[2]) && $versions[0] == 'version') {
         echo "    Migrate drop table and add column.\n";
 
@@ -318,8 +324,9 @@ class Stranger
 
         foreach ($migration_files as $key => $value) {
           $this->debug->log("Stranger::execMigration() key[${key}] value[${value}]");
-          if (! strpos($value, '.php'))
+          if (! strpos($value, '.php')) {
             continue;
+          }
 
           $arr = explode('/', $value);
           $migration_file = $arr[count($arr) - 1];
@@ -352,7 +359,10 @@ class Stranger
       echo "  >>>>" . $e->getMessage() . "\n";
     }
   }
-
+  /**
+   * @param   String dir
+   * @return  Array
+   */
   public function getFileList($dir)
   {
     $files = scandir($dir);
@@ -380,6 +390,7 @@ class Stranger
   // generate controller
   /**
    * コントローラー生成メソッド
+   * @return  none
    */
   private function controllerGenerate()
   {
@@ -388,7 +399,13 @@ class Stranger
     $out_put_filename = CONTROLLER_PATH . $this->class_name . "Controller.php";
     echo "  create " . $out_put_filename . "\n";
     $fp = fopen($out_put_filename, "w");
-    $return = $this->applyTemplate($template_fileatime, $fp, $this->class_name, null, null);
+    $return = $this->applyTemplate(
+      $template_fileatime, 
+      $fp, 
+      $this->class_name, 
+      null, 
+      null
+    );
   }
 
   // destroy controller
@@ -405,6 +422,7 @@ class Stranger
   // generate model
   /**
    * モデル生成メソッド
+   * @return  boolean
    */
   private function modelGenerate()
   {
@@ -426,6 +444,7 @@ class Stranger
   // destroy model
   /**
    * モデル削除メソッド
+   * @return  none
    */
   private function modelDestroy()
   {
@@ -437,6 +456,7 @@ class Stranger
   // generate template
   /**
    * Viewテンプレート生成メソッド
+   * @return  none
    */
   private function templateGenerate()
   {
@@ -459,7 +479,11 @@ class Stranger
         echo "------------- Create ${method} template.\n";
         echo "------------- Read template : " . SCAFFOLD_TEMPLATE_PATH . "/views/${method}.tpl\n";
 
-        $this->createViewTemplate(SCAFFOLD_TEMPLATE_PATH . "/views/${method}.tpl", $view_template_folder . $method . '.tpl', $method);
+        $this->createViewTemplate(
+          SCAFFOLD_TEMPLATE_PATH . "/views/${method}.tpl", 
+          $view_template_folder . $method . '.tpl', 
+          $method
+        );
       }
     } catch (\Exception $e) {
       echo "    " . $e->getMessage() . "\n";
@@ -496,6 +520,7 @@ class Stranger
   // generate maigrate_file
   /**
    * マイグレーションファイル生成メソッド
+   * @return
    */
   private function maigrateGenerate()
   {
@@ -537,8 +562,6 @@ class Stranger
    * Generate or Update Schema File.
    * generateTableConfig($table_name)
    *
-   * @param
-   *          String table_name
    * @return
    */
   private function generateTableConfig()
@@ -596,69 +619,77 @@ class Stranger
     }
   }
 
-  // /////////////////////////////
   /**
    * column_define :
+   * @param   String column_define
+   * @param   String type
+   * @return
    */
   protected function addColumnArrayToTable($column_define, $type)
   {
-    $columns_str = "";
-    $arr = explode(':', $column_define);
-    $value = null;
-    $datas = [
-      'column_name' => $arr[0],
-      'type' => $arr[1],
-      'type_str' => $this->convertTypeKeyString($arr[1], (isset($arr[2]) ? $arr[2] : 255), $value),
-      'length' => isset($arr[2]) ? $arr[2] : 255,
-      'null' => (isset($arr[3]) && $arr[3] != '') ? 'false' : 'true',
-      'null_ok' => (isset($arr[3]) && $arr[3] != '') ? 'NOT NULL' : '',
-      'key' => isset($arr[4]) ? $arr[4] : '',
-      'default' => (isset($arr[5]) && ($arr[5] != '' || $arr[5] != null)) ? $arr[5] : 'null',
-      'model_name' => $this->class_name
-    ];
+    try {
+      
+      $columns_str = "";
+      $arr = explode(':', $column_define);
+      $value = null;
+      $datas = [
+        'column_name' => $arr[0],
+        'type' => $arr[1],
+        'type_str' => $this->convertTypeKeyString($arr[1], (isset($arr[2]) ? $arr[2] : 255), $value),
+        'length' => isset($arr[2]) ? $arr[2] : 255,
+        'null' => (isset($arr[3]) && $arr[3] != '') ? 'false' : 'true',
+        'null_ok' => (isset($arr[3]) && $arr[3] != '') ? 'NOT NULL' : '',
+        'key' => isset($arr[4]) ? $arr[4] : '',
+        'default' => (isset($arr[5]) && ($arr[5] != '' || $arr[5] != null)) ? $arr[5] : 'null',
+        'model_name' => $this->class_name
+      ];
 
-    switch ($type) {
-      case 'model':
-        $template_fileatime = SCAFFOLD_TEMPLATE_PATH . "/models/parts/column.tpl";
-        break;
-      case 'sql':
-        $template_fileatime = SCAFFOLD_TEMPLATE_PATH . "/migrate/parts/column.tpl";
-        break;
-      case 'add_col':
-        $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/migrate/parts/add_column.tpl';
-        break;
-      case 'drop_col':
-        $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/migrate/parts/drop_column.tpl';
-        break;
-      case 'view':
-        $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/views/parts/column.tpl';
-        break;
-      case 'form':
-        $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/views/parts/form/column.tpl';
-        break;
-      default:
-        break;
-    }
-
-    $file_context = file($template_fileatime);
-    for ($i = 0; $i < count($file_context); $i ++) {
-      $value = $file_context[$i];
-      preg_match_all('|<!----(.*)---->|U', $value, $matchs);
-      if (count($matchs[1]) > 0) {
-        $columns_str .= $this->convertKeyToValue($value, $matchs[1], $datas);
-      } else {
-        $columns_str .= $value;
+      switch ($type) {
+        case 'model':
+          $template_fileatime = SCAFFOLD_TEMPLATE_PATH . "/models/parts/column.tpl";
+          break;
+        case 'sql':
+          $template_fileatime = SCAFFOLD_TEMPLATE_PATH . "/migrate/parts/column.tpl";
+          break;
+        case 'add_col':
+          $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/migrate/parts/add_column.tpl';
+          break;
+        case 'drop_col':
+          $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/migrate/parts/drop_column.tpl';
+          break;
+        case 'view':
+          $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/views/parts/column.tpl';
+          break;
+        case 'form':
+          $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/views/parts/form/column.tpl';
+          break;
+        default:
+          break;
       }
+
+      $file_context = file($template_fileatime);
+      for ($i = 0; $i < count($file_context); $i ++) {
+        $value = $file_context[$i];
+        preg_match_all('|<!----(.*)---->|U', $value, $matchs);
+        if (count($matchs[1]) > 0) {
+          $columns_str .= $this->convertKeyToValue($value, $matchs[1], $datas);
+        } else {
+          $columns_str .= $value;
+        }
+      }
+
+      return $columns_str;
+    } catch (\Exception $e) {
+      $this->error->log("Stranger::addColumnArrayToTable() error:" . $e->getMessage());
+      echo ">>>>>>>>" . $e->getMessage() . "\n";
+      throw new \Exception($e->getMessage(), 1);
     }
-
-    return $columns_str;
   }
-
-  // /////////////////////////////
 
   // destroy maigrate_file
   /**
    * マイグレーションファイル削除メソッド
+   * @return none
    */
   public function maigrateDestroy()
   {
@@ -679,6 +710,13 @@ class Stranger
    * class_name : クラス名
    * migration_class_name : マイグレーションファイル クラス名
    * method_name : コントローラメソッド名
+   *
+   * @param   String template_fileatime
+   * @param   fileponter fp
+   * @param   String class_name
+   * @param   String migration_class_name
+   * @param   String method_name
+   * @return  boolean
    */
   public function applyTemplate($template_fileatime, &$fp, $class_name, $migration_class_name = null, $method_name = null)
   {
@@ -747,6 +785,7 @@ class Stranger
           }
           continue;
         }
+
         if (strpos($value, '<!----down_template---->')) {
           if ($this->argv[2] == 'scaffold' || $this->argv[2] == 'model') {
             $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/migrate/parts/drop_table.tpl';
@@ -764,6 +803,7 @@ class Stranger
           }
           continue;
         }
+
         if (strpos($value, '<!----controller_method---->')) {
           if ($this->argv[2] == 'scaffold') {
             echo "create scaffold controller.\n";
@@ -778,7 +818,8 @@ class Stranger
           }
           continue;
         }
-        if (strpos($value, '<!----detail_columns---->')) {
+
+        if (preg_match('<!----detail_columns---->', $value, $ma)) {
           $value = $this->geterateColumnString($this->argv);
           $fwrite = fwrite($fp, $value);
           if ($fwrite === false) {
@@ -786,17 +827,19 @@ class Stranger
           }
           continue;
         }
-        if (strpos($value, '<!----details---->')) {
+
+        if (preg_match('<!----details---->', $value, $ma)) {
           // 詳細画面テンプレート挿入
           echo "insert detail template.\n";
           $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/views/detail.tpl';
           $this->applyTemplate($template_fileatime, $fp, $class_name, null, null);
-          $fwrite = fwrite($fp, $value);
+          // $fwrite = fwrite($fp, $value);
           if ($fwrite === false) {
             return false;
           }
           continue;
         }
+
         if (strpos($value, '<!----columun_name---->')) {
           echo "covert [columun_name].\n";
           for ($j = 4; $j < count($this->argv); $j ++) {
@@ -823,6 +866,10 @@ class Stranger
    * context : 置換対象文字列
    * matchs : 置換対象キー文字列
    * datas : 置き換えデータ
+   * @param   String context
+   * @param   String matchs
+   * @param   Array datas
+   * @return  String
    */
   protected function convertKeyToValue($context, $matchs, $datas)
   {
@@ -842,52 +889,59 @@ class Stranger
    */
   protected function generateColumnsStr($column_define, $type)
   {
-    $columns_str = "";
-    $arr = explode(':', $column_define);
-    $value = null;
-    $datas = [
-      'column_name' => $arr[0],
-      'type' => $arr[1],
-      'type_str' => $this->convertTypeKeyString($arr[1], (isset($arr[2]) ? $arr[2] : 255), $value),
-      'length' => isset($arr[2]) ? $arr[2] : 255,
-      'null' => (isset($arr[3]) && $arr[3] != '') ? 'false' : 'true',
-      'null_ok' => (isset($arr[3]) && $arr[3] != '') ? 'NOT NULL' : '',
-      'key' => isset($arr[4]) ? $arr[4] : '',
-      'default' => (isset($arr[5]) && ($arr[5] != '' || $arr[5] != null)) ? $arr[5] : 'null',
-      'model_name' => $this->class_name
-    ];
+    try {
+      
+      $columns_str = "";
+      $arr = explode(':', $column_define);
+      $value = null;
+      $datas = [
+        'column_name' => $arr[0],
+        'type' => $arr[1],
+        'type_str' => $this->convertTypeKeyString($arr[1], (isset($arr[2]) ? $arr[2] : 255), $value),
+        'length' => isset($arr[2]) ? $arr[2] : 255,
+        'null' => (isset($arr[3]) && $arr[3] != '') ? 'false' : 'true',
+        'null_ok' => (isset($arr[3]) && $arr[3] != '') ? 'NOT NULL' : '',
+        'key' => isset($arr[4]) ? $arr[4] : '',
+        'default' => (isset($arr[5]) && ($arr[5] != '' || $arr[5] != null)) ? $arr[5] : 'null',
+        'model_name' => $this->class_name
+      ];
 
-    if ($type == 'model') {
-      $template_fileatime = SCAFFOLD_TEMPLATE_PATH . "/models/parts/column.tpl";
-    } else if ($type == 'sql') {
-      $template_fileatime = SCAFFOLD_TEMPLATE_PATH . "/migrate/parts/column.tpl";
-    } else if ($type == 'add_col') {
-      $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/migrate/parts/add_column.tpl';
-    } else if ($type == 'drop_col') {
-      $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/migrate/parts/drop_column.tpl';
-    } else if ($type == 'view') {
-      $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/views/parts/column.tpl';
-    } else if ($type == 'form') {
-      $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/views/parts/form/column.tpl';
-    }
-    $file_context = file($template_fileatime);
-    for ($i = 0; $i < count($file_context); $i ++) {
-      $value = $file_context[$i];
-      preg_match_all('|<!----(.*)---->|U', $value, $matchs);
-      if (count($matchs[1]) > 0) {
-        $columns_str .= $this->convertKeyToValue($value, $matchs[1], $datas);
-      } else {
-        $columns_str .= $value;
+      if ($type == 'model') {
+        $template_fileatime = SCAFFOLD_TEMPLATE_PATH . "/models/parts/column.tpl";
+      } else if ($type == 'sql') {
+        $template_fileatime = SCAFFOLD_TEMPLATE_PATH . "/migrate/parts/column.tpl";
+      } else if ($type == 'add_col') {
+        $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/migrate/parts/add_column.tpl';
+      } else if ($type == 'drop_col') {
+        $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/migrate/parts/drop_column.tpl';
+      } else if ($type == 'view') {
+        $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/views/parts/column.tpl';
+      } else if ($type == 'form') {
+        $template_fileatime = SCAFFOLD_TEMPLATE_PATH . '/views/parts/form/column.tpl';
       }
-    }
+      $file_context = file($template_fileatime);
+      for ($i = 0; $i < count($file_context); $i ++) {
+        $value = $file_context[$i];
+        preg_match_all('|<!----(.*)---->|U', $value, $matchs);
+        if (count($matchs[1]) > 0) {
+          $columns_str .= $this->convertKeyToValue($value, $matchs[1], $datas);
+        } else {
+          $columns_str .= $value;
+        }
+      }
 
-    return $columns_str;
+      return $columns_str;
+    } catch (\Exception $e) {
+      $this->error->log("Stranger::generateColumnsStr() error:" . $e->getMessage());
+      echo ">>>>>>>>" . $e->getMessage() . "\n";
+      throw new \Exception($e->getMessage(), 1);
+    }
   }
 
   /**
    *
-   * @param
-   *          $argv
+   * @param   Array argv
+   * @return  String
    */
   protected function geterateColumnString($argv)
   {
@@ -917,7 +971,12 @@ class Stranger
     $this->debug->log('Stranger::geterateColumnString() end:');
     return $column_string;
   }
-
+  /**
+   * @param   String type
+   * @param   integer length
+   * @param   String value
+   * @return  String
+   */
   protected function convertTypeKeyString($type, $length, $value)
   {
     switch ($type) {
@@ -946,7 +1005,7 @@ class Stranger
       case 'text':
         return $type;
       default:
-        return $type . "(" . $length . ")";
+        throw new \Exception("${$type} is an invalid type.", 1);
     }
   }
 }

@@ -15,7 +15,7 @@
     $this->set('next', $next);
   }
 
-  public function show() {
+  public function detail() {
     $data = null;
     $id = $this->request['id'];
 
@@ -41,7 +41,7 @@
       $<!----table_name----> = new <!----class_name---->($this->dbh);
       $<!----table_name---->->save($this->request);
       $this->dbh->commit();
-      $url = BASE_URL . '<!----class_name---->' . '/show/' . $<!----table_name---->->primary_key_value . '/';
+      $url = BASE_URL . '<!----class_name---->' . '/detail/' . $<!----table_name---->->primary_key_value . '/';
       $this->redirect($url);
     } catch (\Exception $e) {
       $this->debug->log("<!----class_name---->Controller::create() error:" . $e->getMessage());

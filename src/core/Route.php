@@ -3,10 +3,14 @@ namespace strangerfw\core;
 
 class Route {
   public $route = [];
-  private $default_actions = ['index', 'new', 'edit', 'create', 'save', 'update', 'confirm', 'detail', 'delete'];
-  private $default_need_id_actions = ['new', 'edit', 'detail', 'delete'];
+  private $default_actions = ['edit', 'create', 'save', 'update', 'confirm', 'detail', 'delete', 'index'  ];
+  private $default_need_id_actions = ['edit', 'confirm', 'detail', 'delete'];
   private $default_need_id_confirm_str = ['confirm'];
-  private $url_not_found = ['controller' => 'DefaultController', 'action' => 'index', 'uri' => '/Default/index/'];
+  private $url_not_found = [
+    'controller' => 'DefaultController', 
+    'action' => 'index', 
+    'uri' => '/Default/index/'
+  ];
 
   public $error_log;
   public $info_log;
@@ -47,20 +51,39 @@ class Route {
         if($namespace)
           $uri = DOCUMENT_ROOT.$namespace;
         if(in_array($action, $this->default_need_id_actions)) {
-          $uri .= DOCUMENT_ROOT.$controller.'/'.$action.'/ID';
+          if($action == 'index') {
+            $uri .= DOCUMENT_ROOT.$controller.'/ID';
+          } else {
+            $uri .= DOCUMENT_ROOT.$controller.'/'.$action.'/ID';
+          }
         }
         else if (in_array($action, $this->default_need_id_confirm_str)){
-          $uri = DOCUMENT_ROOT.$controller.'/'.$action.'/CONFIRM_STRING';
+          if($action == 'index') {
+            $uri = DOCUMENT_ROOT.$controller.'/CONFIRM_STRING';
+          } else {
+            $uri = DOCUMENT_ROOT.$controller.'/'.$action.'/CONFIRM_STRING';
+          }
         }
         else {
-          $uri .= DOCUMENT_ROOT.$controller.'/'.$action.'/';
+          if($action == 'index') {
+            $uri .= DOCUMENT_ROOT.$controller.'/';
+          } else {
+            $uri .= DOCUMENT_ROOT.$controller.'/'.$action.'/';
+          }
         }
 
         if($namespace){
-          $this->route[$uri] = ['namespace' => $namespace, 'controller' => $controller.'Controller', 'action' => $action];
+          $this->route[$uri] = [
+            'namespace' => $namespace, 
+            'controller' => $controller.'Controller', 
+            'action' => $action
+          ];
         }
         else{
-          $this->route[$uri] = ['controller' => $controller.'Controller', 'action' => $action];
+          $this->route[$uri] = [
+            'controller' => $controller.'Controller', 
+            'action' => $action
+          ];
         }
         // $this->debug->log("Route::setDefaultRoutes() route:".print_r($this->route, true));
       }
@@ -70,6 +93,14 @@ class Route {
   public function findRoute($url) {
     $this->debug->log("Route::findRoute() Start");
     $this->debug->log("Route::findRoute() url:".$url);
+    if (preg_match('favicon.ico', $url)) {
+      return;
+    }
+
+    if (preg_match('/favicon.ico/', $url)) {
+      return;
+    }
+
     foreach ($this->route as $key => $value) {
       $uri = $key;
       $key = str_replace('/', '\/', $key);
@@ -77,22 +108,10 @@ class Route {
         $key = str_replace($k, $v, $key);
       }
       $pattern = "/".$key."/";
-      $this->debug->log("Route::findRoute() pattern:".$pattern);
-      if (preg_match('/css/', $url)) {
-        return;
-      }
-      if (preg_match('/js/', $url)) {
-        return;
-      }
-      if (preg_match('/images/', $url)) {
-        return;
-      }
-      if (preg_match('/empty/', $url)) {
-        return;
-      }
+      $this->debug->log("Route::findRoute() pattern:${pattern}");
       if (preg_match($pattern, $url)) {
         $value['uri'] = $uri;
-        $this->debug->log("Route::findRoute() url:".print_r($value, true));
+        $this->debug->log("Route::findRoute() route find.");
         return $value;
       }
     }
