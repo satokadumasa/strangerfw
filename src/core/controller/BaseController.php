@@ -40,8 +40,10 @@ class BaseController {
 
   protected function defaultSet(){
     $this->set('document_root',DOCUMENT_ROOT);
+    $this->debug->log("BaseController::defaultSet() START");
     $log_out_str = "";
     if (isset($_SESSION[COOKIE_NAME]['error_message'])) {
+      $this->debug->log("BaseController::defaultSet() error_message");
       $this->set('error_message', $_SESSION[COOKIE_NAME]['error_message']);
     }
     $this->set('Sitemenu',$log_out_str);
@@ -50,6 +52,7 @@ class BaseController {
     if (isset($session['Auth'])) {
       $log_out_str = $menu_helper->site_menu($session['Auth'], 'logined');
       $this->auth = $session['Auth'];
+      $this->debug->log("BaseController::defaultSet() auth:" . print_r($session, true));
     }
     else {
       $log_out_str = $menu_helper->site_menu($session['Auth'], 'nologin');
@@ -57,7 +60,7 @@ class BaseController {
     }
     $this->set('Sitemenu',$log_out_str);
     \strangerfw\core\Session::deleteMessage('error_message');
-    
+    $this->set('base_url', BASE_URL);
     $this->set('document_root', DOCUMENT_ROOT);
     $this->set('site_name', SITE_NAME);
   }
@@ -97,15 +100,45 @@ class BaseController {
    *
    */
   public function beforeAction() {
-    if ($this->auth_check && in_array($this->action, $this->auth_check)) {
-      $auth = \strangerfw\Authentication::isAuth();
-      if($auth){
-        if ($this->role_ids && \strangerfw\Authentication::roleCheck($this->role_ids, $this->action)){
-          $this->redirect(DOCUMENT_ROOT);
-          exit();
-        }
-      } 
+    $auth = \strangerfw\Authentication::isAuth();
+    $is_auth = 0;
+    $this->debug->log("BaseController::beforeAction() auth:" . print_r($auth, true));
+    if($auth){
+      $this->debug->log("BaseController::beforeAction() CH-01");
+      $is_auth = 1;
     }
+    else {
+      $this->debug->log("BaseController::beforeAction() CH-02");
+    }
+    $this->set('ErrorMessages', []);
+
+    if ($this->auth_check && in_array($this->action, $this->auth_check)) {
+      $this->debug->log("BaseController::beforeAction() CH-02");
+      if($auth){
+        $this->debug->log("BaseController::beforeAction() CH-03");
+        if ($this->role_ids && \strangerfw\Authentication::roleCheck($this->role_ids, $this->action)){
+          $this->debug->log("BaseController::beforeAction() CH-04");
+          $errorMessages[] = "You don't have permission.";
+          $this->set('ErrorMessages', $errorMessages);
+        }
+      }
+      else {
+        $this->debug->log("BaseController::beforeAction() CH-05");
+        $errorMessages[] = "You don't signed in.";
+        $this->set('ErrorMessages', $errorMessages);
+      }
+    }
+    if($_POST) {
+      try{
+        if(!$this->validateCSRFToken($this->request['csrf_tokens'])) {
+          throw new \Exception("Error Processing Request", 1);
+        }
+        $this->info_log->log("BaseController::beforeAction()");
+      } catch (\PDOException $e) {
+        $this->error_log->log("BaseController::beforeAction()");
+      }
+    }
+    $this->set('is_auth', $is_auth);
   }
 
   /**
@@ -162,5 +195,13 @@ class BaseController {
    */
   public function setAuthCheck($actions) {
     $this->auth_check = $actions;
+  }
+
+  protected function getCSRFToken() {
+    return \strangerfw\core\Session::getCSRFToken();
+  }
+
+  protected function validateCSRFToken($token) {
+    return \strangerfw\core\Session::validateCSRFToken($token);
   }
 }

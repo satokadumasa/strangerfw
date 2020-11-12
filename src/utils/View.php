@@ -31,7 +31,7 @@ class View {
    *
    * @param string $controller_class_name Controller class name
    * @param string $action action name
-   * @param array $datas set data
+   * @param array $data set data
    */
   public function render($controller_class_name, $action, $data){
     $this->debug->log("View::render() data:".print_r($data, true));
@@ -43,12 +43,12 @@ class View {
   /**
    * Set data to template
    *
-   * @param array $datas set data
+   * @param array $data set data
    * @param string $fileatime template file name
    * @param string $controller_class_name Controller class name
    * @param string $action action name
    */
-  public function framingView(&$document, $datas, $fileatime, $controller_class_name = null, $action = null) {
+  public function framingView(&$document, $data, $fileatime, $controller_class_name = null, $action = null) {
     $disp_div = true;
     if (file_exists($this->view_template_path . $controller_class_name . '/' . $action . 'tpl')) return false;
     $file_context = file($fileatime);
@@ -67,7 +67,7 @@ class View {
 
         if (count($matchs[1]) > 0) {
           if (strpos($value, '!----renderpartial') > 0) {
-            $this->renderPartial($value, $matchs, $controller_class_name, $action, $document, $datas);
+            $this->renderPartial($value, $matchs, $controller_class_name, $action, $document, $data);
             continue;
           }
           else if(strpos($value, '<!----value:')) {
@@ -79,7 +79,7 @@ class View {
              *     [1] => Array ( [0] => UserList:1:name [1] => UserList:2:name [2] => UserList:3:name )
              *   )
              */
-            $value = $this->convertKeyToValue($value, $matchs[1], $datas);
+            $value = $this->convertKeyToValue($value, $matchs[1], $data);
           }
           else if (strpos($value, '<!----iteratior:') && strpos($value, ':start')) {
             //  イテレーター
@@ -88,12 +88,12 @@ class View {
              *  イレーター処理メソッド呼び出し
              *
              *  i : カウンター
-             *  datas[keys[1]]  : セットする変数（多次元連想配列）
+             *  data[keys[1]]  : セットする変数（多次元連想配列）
              *  file_context   :  テンプレートの内容
              */
-            if (isset($datas[$keys[1]])) {
-              foreach ($datas[$keys[1]] as $data) {
-                $ret = $this->viewIterator($i, $data, $file_context);
+            if (isset($data[$keys[1]])) {
+              foreach ($data[$keys[1]] as $datum) {
+                $ret = $this->viewIterator($i, $datum, $file_context);
               }
               $value = "";
               $i = isset($ret) ? $ret : $i;
@@ -105,22 +105,24 @@ class View {
             }
           }
           else if(strpos($value, '!----select_options:')) {
-            $this->selectOptions($value, $datas);
+            $this->selectOptions($value, $data);
             continue;
           }
           else if(strpos($value, '!----radiobutton_options:')) {
-            $this->radiobuttonOptions($value, $datas);
+            $this->radiobuttonOptions($value, $data);
             continue;
           }
           else if(strpos($value, '!----checkbox_options:')) {
-            $this-checkboxOptions($value, $datas);
+            $this-checkboxOptions($value, $data);
             continue;
           }
-          else if(strpos($value, '!----disp_div:') && (strpos($value, '!----disp_div:end---->') == 0)) {
-            $disp_div = $this->disp_div($value, $datas);
+          else if(strpos($value, '!----disp_div:') && (strpos($value, '!----disp_div:end----') == 0)) {
+            $this->debug->log("View::framingView() disp_div START");
+            $disp_div = $this->disp_div($value, $data);
             continue;
           }
           else if(strpos($value, '!----disp_div:end----')) {
+            $this->debug->log("View::framingView() disp_div END");
             $disp_div = true;
             continue;
           }
@@ -139,6 +141,7 @@ class View {
   protected function disp_div($value, $data) {
     $result = false;
     $operators =[':equal:',':not_equal:',':or_more:',':greater_than:',':less_than:',':or_less:',':existing:'];
+    $this->debug->log("View::disp_div() value[${value}] data[" . print_r($data, true) . "]");
     /***
      * ・Authが空の場合
      * ・Auth['User']['id']と['User']['id']やModel[Model]['user_id']に違いがあった場合
@@ -152,7 +155,7 @@ class View {
      *      less_tan：「左辺が右辺より小さい場合」
      *      or_less：「左辺が右辺以下の場合」
      */
-    $value = str_replace('<!----disp_div:', '', $value);
+    $value = explode('<!----disp_div:', $value)[1];
     $value = str_replace('---->', '', $value);
     foreach ($operators as $key => $operator) {
       if (strpos($value, $operator)) {
@@ -241,7 +244,7 @@ class View {
    *
    *
    */
-  protected function renderPartial($value, $matchs, $controller_class_name, $action, $document, $datas) {
+  protected function renderPartial($value, $matchs, $controller_class_name, $action, $document, $data = null) {
     //  部分テンプレート読み込み
     $renderpartial = $matchs[1][0];
     if (strpos($value, 'CONTROLLER/ACTION') > 0) {
@@ -256,7 +259,7 @@ class View {
     $arr = explode(':', $renderpartial);
 
     $partial_tpl_filename = $this->view_template_path . $arr[1] . '.tpl';
-    $this->framingView($document, $datas , $partial_tpl_filename);
+    $this->framingView($document, $data , $partial_tpl_filename);
   }
 
   /**
@@ -264,11 +267,11 @@ class View {
    *
    *
    */
-  protected function selectOptions($value, $datas) {
+  protected function selectOptions($value, $data) {
     /**
      *  <!----select_options:UserInfo:pref_id:Prefecture:name---->
      */
-    $this->debug->log("View::selectOptions() datas:", print_r($datas, true));
+    $this->debug->log("View::selectOptions() data:", print_r($data, true));
     $arr = explode(':', $value);
     $pattern = "<!----select_options:(.*)---->";
     preg_match_all(
@@ -278,8 +281,8 @@ class View {
     );
     foreach ($matchs[1] as $key => $match) {
       $arr = explode(':', $match);
-      $selects = isset($datas[$arr[1]]) ? $datas[$arr[1]] : [];
-      $this->selectOption($selects, $datas[$arr[2]], $arr[3]);
+      $selects = isset($data[$arr[1]]) ? $data[$arr[1]] : [];
+      $this->selectOption($selects, $data[$arr[2]], $arr[3]);
     }
   }
 
@@ -288,7 +291,7 @@ class View {
    *
    *
    */
-  protected function radiobuttonOptions($value, $datas) {
+  protected function radiobuttonOptions($value, $data) {
     /**
      *  <!----radiobutton_options:UserInfo:pref_id:Prefecture:id:name---->
      */
@@ -300,8 +303,8 @@ class View {
     );
     foreach ($matchs[1] as $key => $match) {
       $arr = explode(':', $match);
-      $select = isset($datas[$arr[1]]) ? $datas[$arr[1]] : null;
-      $this->radiobutton($select, $arr[0], $datas[$arr[2]], $arr[4], $arr[3], $arr[4]);
+      $select = isset($data[$arr[1]]) ? $data[$arr[1]] : null;
+      $this->radiobutton($select, $arr[0], $data[$arr[2]], $arr[4], $arr[3], $arr[4]);
     }
   }
 
@@ -310,7 +313,7 @@ class View {
    *
    *
    */
-  protected function checkboxOptions($value, $datas) {
+  protected function checkboxOptions($value, $data) {
     /**
      *    <!----checkbox_options:UserInfo:pref_id:Prefecture:id:name---->
      */
@@ -322,8 +325,8 @@ class View {
     );
     foreach ($matchs[1] as $key => $match) {
       $arr = explode(':', $match);
-      $selects = isset($datas[$arr[1]]) ? $datas[$arr[1]] : null;
-      $this->checkbox($selects, $arr[0], $datas[$arr[2]], $arr[4], $arr[3]);
+      $selects = isset($data[$arr[1]]) ? $data[$arr[1]] : null;
+      $this->checkbox($selects, $arr[0], $data[$arr[2]], $arr[4], $arr[3]);
     }
   }
 
@@ -386,9 +389,9 @@ class View {
    *
    *  @param string $context    : 置換対象文字列
    *  @param array $matchs : 置換対象キー文字列
-   *  @param array $datas set data
+   *  @param array $data set data
    */
-  protected function convertKeyToValue($context, $matchs, $datas){
+  protected function convertKeyToValue($context, $matchs, $data){
     // $this->debug->log("View::convertKeyToValue() matchs:".print_r($matchs, true));
     foreach ($matchs as $v) {
       $keys = explode(':', $v);
@@ -396,7 +399,7 @@ class View {
         $context = str_replace('<!----value:document_root---->', DOCUMENT_ROOT, $context);
         continue;
       }
-      $arr_value = isset($datas[$keys[1]]) ? $datas[$keys[1]] : '';
+      $arr_value = isset($data[$keys[1]]) ? $data[$keys[1]] : '';
 
       if (!$arr_value) return null;
 
@@ -414,10 +417,10 @@ class View {
    *  イテレータ表示機能
    *
    *  @param int $i : Line counter
-   *  @param array $datas : 表示用データ
+   *  @param array $data : 表示用データ
    *  @param string $file_context : テンプレート内容
    */
-  public function viewIterator($i, $datas, $file_context) {
+  public function viewIterator($i, $data, $file_context) {
     $this->debug->log("View::viewIterator() Start");
     $keys = [];
     $j = 0;
@@ -433,9 +436,9 @@ class View {
         $this->debug->log("View::viewIterator() Start");
         //  イテレーター再帰呼び出し
         $keys = explode(':', $matchs[1][0]);
-        if (isset($datas[$keys[1]][$keys[2]])) {
-          foreach ($datas[$keys[1]][$keys[2]] as $data) {
-            $ret = $this->viewIterator($j, $data, $file_context);
+        if (isset($data[$keys[1]][$keys[2]])) {
+          foreach ($data[$keys[1]][$keys[2]] as $datum) {
+            $ret = $this->viewIterator($j, $datum, $file_context);
           }
           $value = "";
           $j = $ret;
@@ -455,13 +458,13 @@ class View {
         break;
       }
       else if (strpos($value, '<!----value:')){
-        $value = $this->convertKeyToValue($value, $matchs[1], $datas);
+        $value = $this->convertKeyToValue($value, $matchs[1], $data);
       }
       echo $value;
     }
     return $j;
   }
 
-  public function partialRender($datas){
+  public function partialRender($data){
   }
 }

@@ -17,15 +17,18 @@ class ClassLoader {
             LIB_PATH,
             MIGRATION_PATH,
             HELPER_PATH,
-            // SERVICE_PATH,
+            SERVICE_PATH,
           ];
       $class = str_replace("\\", "/", $class);
       $class = str_replace("//", "/", $class);
       if(self::checkStrangerfw($class)) return true;
       foreach ($scan_dir_list as $scan_dir) {
         $file_name = '';
-        foreach (self::getDirList($scan_dir) as $directory) {
+        if(!file_exists($scan_dir)) continue;
+        $files = self::getDirList($scan_dir);
+        foreach ($files as $directory) {
           $file_name = $directory.$class.'.php';
+          $debug->log("ClassLoader::loadClass() file_name :${file_name}");
 
           if (file_exists($file_name)) {
             $debug->log("ClassLoader::loadClass() Requires :${class}");

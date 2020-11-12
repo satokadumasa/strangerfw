@@ -16,6 +16,8 @@ class LoadSeed
     {
         $error = new \strangerfw\utils\Logger('ERROR');
         $debug = new \strangerfw\utils\Logger('DEBUG');
+        echo "debug:" . print_r($debug, true) . "\n";
+        $debug->log("LoadSeed::load() ");
         try {
             $file_name = DB_PATH . '/seeds/' . $seed . '.csv';
             $debug->log("LoadSeed::load() file_name:${file_name}");
@@ -24,9 +26,11 @@ class LoadSeed
             $file->setFlags(\SplFileObject::READ_CSV);
             $columns = null;
             $class_name_org = \strangerfw\utils\StringUtil::convertTableNameToClassName($seed);
-            echo "INSERT INTO ${class_name} \n";
+            $debug->log("LoadSeed::load() class_name_org:${class_name_org}");
+            echo "INSERT INTO ${class_name_org} \n";
             foreach ($file as $row)
             {
+                echo "row:" . print_r($row, true) . "\n";
                 $debug->log("LoadSeed::load() row:" . print_r($row, true));
                 $data = [];
                 if(!$columns){
@@ -38,6 +42,7 @@ class LoadSeed
                 for ($i = 0; $i < count($row); $i++){
                     $data[$class_name_org][$columns[$i]] = $row[$i];
                 }
+                echo "data:" . print_r($data, true) . "\n";
                 $debug->log("LoadSeed::load() data:" . print_r($data, true));
                 $class_name = "\\" . $class_name_org;
                 $dbh->beginTransaction();

@@ -21,4 +21,29 @@ class Session {
   public static function deleteMessage($type) {
     unset($_SESSION[COOKIE_NAME][$type]);
   }
+
+  public static function getCSRFToken()
+  {
+    $bytes = function_exists('random_bytes') ? 
+    random_bytes(48) : openssl_random_pseudo_bytes(48);
+    $nonce = base64_encode($bytes);
+
+    if (!empty($_SESSION[COOKIE_NAME]['csrf_tokens'])) {
+      $_SESSIO[COOKIE_NAME]['csrf_tokens'] = [];
+    }
+
+    $_SESSION[COOKIE_NAME]['csrf_tokens'][$nonce] = true;
+
+    return $nonce;
+  }
+
+  public static function validateCSRFToken($token)
+  {
+      if (isset($_SESSION[COOKIE_NAME]['csrf_tokens'][$token])) {
+          unset($_SESSION[COOKIE_NAME]['csrf_tokens'][$token]);
+          return true;
+      }
+
+      return false;
+  }
 }

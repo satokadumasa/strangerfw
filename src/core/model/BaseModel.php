@@ -85,7 +85,7 @@ class BaseModel {
 
     $column_names = null;
 
-    $this->debug->log("BaseModel::find() sql:".$sql);
+    $this->debug->log("BaseModel::find() sql(1):".$sql);
     $stmt = $this->dbh->prepare($sql);
     foreach ($this->conditions as $v) {
       $arr = explode('.', $v['column_name']);
@@ -111,6 +111,7 @@ class BaseModel {
           break;
       }
     }
+    $this->debug->log("BaseModel::find() sql(2):".$sql);
     $stmt->execute();
 
     foreach ($stmt->fetchAll() as $row) {
@@ -129,14 +130,6 @@ class BaseModel {
     }
 
 
-    // if (count($primary_keys) > 0) {
-    //   if ($this->has){
-    //     $this->findHasModelesData($datas, $this->has, $primary_keys);
-    //   }
-    //   if ($this->has_many_and_belongs_to) {
-    //     $this->findHasManyAndBelongsTo($datas, $primary_keys);
-    //   }
-    // }
     if ($type === 'first') {
       if (!isset($primary_keys[0])) return false;
       $id = $primary_keys[0];
@@ -556,6 +549,8 @@ class BaseModel {
       $hasManyAndBelongsToModels = [];
       $now_date = date('Y-m-d H:i:s');
 
+      $this->debug->log("BaseModel::save() form:" . print_r($form, true));
+      $this->debug->log("BaseModel::save() " . $this->model_name . ":" . print_r($form[$this->model_name], true));
       $this->validation($form);
       if (
         isset($form[$this->model_name][$this->primary_key]) &&
@@ -564,9 +559,11 @@ class BaseModel {
           $form[$this->model_name][$this->primary_key] != null
         )
       ) {
+          $this->debug->log("BaseModel::save() createModifySql CH-01");
           $sql = $this->createModifySql($form[$this->model_name]);  // CASE MODIFY
       }
       else {
+        $this->debug->log("BaseModel::save() createModifySql CH-02");
         unset($form[$this->model_name][$this->primary_key]);
         $sql = $this->createInsertSql();  // CASE INSERT
       }
@@ -632,6 +629,7 @@ class BaseModel {
 
   public function createInsertSql() {
     $col_names = array_keys($this->column_conf);
+    $this->debug->log("BaseModel::createInsertSql() col_names:" . print_r($col_names, true));
     $colums_str = null;
     $values_str = null;
     foreach ($col_names as $col_name) {
@@ -651,11 +649,13 @@ class BaseModel {
 
   public function createModifySql($form) {
     // $col_names = array_keys($this->columns);
+    $this->debug->log("BaseModel::createModifySql() form:" . print_r($form, true));
     $col_names = array_keys($form);
     $colums_str = null;
     $values_str = null;
     foreach ($col_names as $col_name) {
       if ($col_name == $this->primary_key) continue;
+      $this->debug->log("BaseModel::createModifySql() colums_str_tmp:[${colums_str_tmp}] col_name[${col_name}]");
       $colums_str_tmp = $col_name . " = :" . $col_name;
       $colums_str .= $colums_str ? ", " . $colums_str_tmp : $colums_str_tmp;
     }

@@ -79,29 +79,29 @@ class Stranger
         break;
       case 'migrate:init':
         echo "  exec migrate:init\n";
-        $conf = \strangerfw\core\Config::get('database.config');
-        $this->con($conf);
+        // $conf = \strangerfw\core\Config::get('database.config');
+        $this->con(\strangerfw\core\Config::get('database.config'));
         $this->initSchema();
         exit();
         break;
       case 'migrate':
         echo "  exec migrate\n";
-        $conf = \strangerfw\core\Config::get('database.config');
-        $this->con($conf);
+        // $conf = \strangerfw\core\Config::get('database.config');
+        $this->con(\strangerfw\core\Config::get('database.config'));
         $this->execMigration();
         exit();
         break;
       case 'db:migrate':
         echo "  exec db:migrate\n";
-        $conf = \strangerfw\core\Config::get('database.config');
-        $this->con($conf);
+        // $conf = \strangerfw\core\Config::get('database.config');
+        $this->con(\strangerfw\core\Config::get('database.config'));
         $arr = explode(':', $this->argv[1]);
         exit();
         break;
       case 'db:seeds':
         echo "  exec db:seeds\n";
-        $conf = \strangerfw\core\Config::get('database.config');
-        $this->con($conf);
+        // $conf = \strangerfw\core\Config::get('database.config');
+        $this->con(\strangerfw\core\Config::get('database.config'));
         \strangerfw\utils\LoadSeed::load($this->dbh, $this->argv[2]);
       case '-d':
         echo "  run destroy\n";
@@ -216,6 +216,11 @@ class Stranger
       case 'column':
         echo "    run add column migrations\n";
         $this->maigrateGenerate();
+        break;
+
+      case 'schema:yaml':
+        $this->con(\strangerfw\core\Config::get('database.config'));
+        $this->getSchemaStructure();
         break;
 
       default:
@@ -971,6 +976,127 @@ class Stranger
     $this->debug->log('Stranger::geterateColumnString() end:');
     return $column_string;
   }
+
+  /**
+   *
+   */
+  public function getSchemaStructure() {
+    $this->debug->log("------------------------------------------------------");
+    $conf = \strangerfw\core\Config::get('database.config');
+    $this->debug->log("Stranger::getSchemaStructure() conf:" . print_r($conf, true));
+    $this->con($conf);
+    $datas = [];
+    $primary_keys = [];
+    $sql = "SHOW TABLES FROM " . $conf['default_database']['dbname'] ;
+    $this->debug->log("Stranger::getSchemaStructure() sql:${sql}");
+
+    $stmt = $this->dbh->query($sql);
+    // $list_table_stmt->execute();
+    $yamls = $this->getSeedFiles();
+    $this->debug->log("Stranger::getSchemaStructure() yamls:" . print_r($yamls, true));
+    while ($row = $stmt->fetch()) {
+      $this->debug->log("Stranger::getSchemaStructure() row:" . print_r($row, true));
+      $table_name = $row["TABLE_NAMES.Tables_in_" . $conf['default_database']['dbname']];
+      if(in_array($table_name, $yamls)) continue;
+      $this->debug->log("Stranger::getSchemaStructure() table_name:" . $table_name);
+      $column_defines = [];
+      $column_defines[$table_name] = $this->getTableStructure($table_name);
+      $this->debug->log("Stranger::getSchemaStructure() column_defines:" . print_r($column_defines, true));
+
+      $fp = \Spyc::YAMLDump($column_defines, true, true, true);
+      file_put_contents(SCHEMA_PATH . $table_name . ".yaml", $fp);
+    }
+  }
+
+  /**
+   *
+   */
+  private function getSeedFiles() {
+    $files = scandir(SCHEMA_PATH);
+    // $debug->log("ClassLoader::getDirList() files:".print_r($files, true));
+    $files = array_filter($files, function ($file) {
+      return !in_array($file, ['.', '..', '.gitkeep']);
+    });
+    $this->debug->log("Stranger::getSeedFiles() files:" . print_r($files, true));
+    $yamls = [];
+    foreach ($files as $file) {
+      $yamls[] = explode('.', $file)[0];
+    }
+    return $yamls;
+  }
+
+  /**
+   *
+   */
+  public function getTableStructure($table_name) {
+    $this->debug->log("Stranger::getTableStructure() table_name[${table_name}]");
+    $conf = \strangerfw\core\Config::get('database.config');
+    $schema = $conf['default_database']['dbname'];
+    $sql = "DESC ${schema}.${table_name}";
+    try{
+      $stmt = $this->dbh->query($sql);
+      $column_defines = [];
+      while ($row = $stmt->fetch()) {
+        // $keys = $this->excludeNumbers(array_keys($row));
+        $this->debug->log("Stranger::getTableStructure() row:" . print_r($row, true));
+        $column_define = [];
+        $k = $row['COLUMNS.Field'];
+        $this->debug->log("Stranger::getTableStructure() column_name:${k}");
+        [$type, $length] = $this->getTypeAndLength($row['COLUMNS.Type']);
+        // $type = '';
+        // $length = 0;
+
+        $column_define = [
+          'type'    => $type,
+          'length'  => $length,
+          'null'    => isset($row['COLUMNS.Type']) ? $row['COLUMNS.Null'] : '',
+          'key'     => isset($row['COLUMNS.Type']) ? $row['COLUMNS.Key'] : '',
+          'default' => isset($row['COLUMNS.Type']) ? $row['COLUMNS.Default'] : '',
+          // 'Extra'   => isset($row['COLUMNS.Type']) ? $row['COLUMNS.Extra'] : '',
+        ];
+        $column_defines[$k] = $column_define;
+      }
+      $this->debug->log("Stranger::getTableStructure() column_defines:" . print_r($column_defines, true));
+      return $column_defines;
+    } catch (\Exception $e) {
+      echo "Stranger::getTableStructure() Error:" . $e->getMessage() . "\n";
+      $this->debug->log("Stranger::getTableStructure() Error:" . $e->getMessage());
+    }
+  }
+
+  private function getTypeAndLength($value) {
+    $value = str_replace(')', '', $value);
+    $arr = explode('(', $value);
+    $type = $arr[0];
+    $this->debug->log("Stranger::getTypeAndLength() type[${type}]");
+    switch ($type) {
+      case 'int':
+      case 'tinyint':
+      case 'smallint':
+      case 'bigint':
+      case 'float':
+      case 'double':
+      case 'varchar':
+      case 'date':
+      case 'time':
+      case 'year':
+      case 'enum':
+      case 'set':
+        $length = $arr[1];
+        break;
+      case 'datetime':
+      case 'timestamp':
+        $length = 19;
+        break;
+      case 'text':
+        $length = 100000;
+        break;
+      default:
+        throw new \Exception("${$type} is an invalid type.", 1);      
+    }
+    return [$type, $length];
+  }
+
   /**
    * @param   String type
    * @param   integer length
